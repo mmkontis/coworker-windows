@@ -98,27 +98,31 @@ jobs:
           "$hash  $($installer.Name)" | Set-Content -Encoding ascii "$($installer.FullName).sha256"
           "Installer: $($installer.Name), $([math]::Round($installer.Length / 1MB, 1)) MB, sha256 $hash" >> $env:GITHUB_STEP_SUMMARY
 
-      - name: Try the installer (silent install, start, uninstall)
-        run: |
-          $installer = Get-ChildItem (Join-Path $env:RUNNER_TEMP 'installer') -Filter 'Coworker-*-win-x64.exe' | Select-Object -First 1
-          $log = Join-Path $env:RUNNER_TEMP 'install.log'
-          $p = Start-Process $installer.FullName -ArgumentList '/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART',"/LOG=$log" -Wait -PassThru
-          if ($p.ExitCode -ne 0) { Get-Content $log -Tail 40; throw "The installer exited with $($p.ExitCode)." }
-          $app = Join-Path $env:LOCALAPPDATA 'Programs\Coworker\Coworker.exe'
-          if (-not (Test-Path $app)) { Get-Content $log -Tail 40; throw "Coworker.exe was not installed to $app." }
-          # A silent install starts the app in the background (the update path). It has to stay up.
-          Start-Sleep -Seconds 12
-          $running = Get-Process Coworker -ErrorAction SilentlyContinue
-          if (-not $running) { throw "Coworker did not stay running after the silent install." }
-          "Installed and running: $((Get-Item $app).VersionInfo.FileVersion)" >> $env:GITHUB_STEP_SUMMARY
-          $running | Stop-Process -Force
-          $uninstaller = Join-Path $env:LOCALAPPDATA 'Programs\Coworker\unins000.exe'
-          $u = Start-Process $uninstaller -ArgumentList '/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART' -Wait -PassThru
-          if ($u.ExitCode -ne 0) { throw "The uninstaller exited with $($u.ExitCode)." }
-
       - uses: actions/upload-artifact@v4
         with:
           name: coworker-windows-installer
           path: ${{ runner.temp }}/installer
           retention-days: 14
           if-no-files-found: error
+
+      - name: Try the installer (silent install, start, uninstall)
+        run: |
+          $installer = Get-ChildItem (Join-Path $env:RUNNER_TEMP 'installer') -Filter 'Coworker-*-win-x64.exe' | Select-Object -First 1
+          $log = Join-Path $env:RUNNER_TEMP 'install.log'
+          # WaitForExit, not Start-Process -Wait: -Wait also waits for the app the installer starts, which never exits.
+          $p = Start-Process $installer.FullName -ArgumentList '/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART',"/LOG=$log" -PassThru
+          if (-not $p.WaitForExit(300000)) { $p.Kill(); throw "The installer was still running after 5 minutes." }
+          if ($p.ExitCode -ne 0) { Get-Content $log -Tail 40; throw "The installer exited with $($p.ExitCode)." }
+          $app = Join-Path $env:LOCALAPPDATA 'Programs\Coworker\Coworker.exe'
+          if (-not (Test-Path $app)) { Get-Content $log -Tail 40; throw "Coworker.exe was not installed to $app." }
+          # A silent install starts the app in the background (the update path). It has to stay up.
+          Start-Sleep -Seconds 15
+          $running = Get-Process Coworker -ErrorAction SilentlyContinue
+          if (-not $running) { throw "Coworker did not stay running after the silent install." }
+          "Installed and running: $((Get-Item $app).VersionInfo.FileVersion)" >> $env:GITHUB_STEP_SUMMARY
+          $running | Stop-Process -Force
+          Start-Sleep -Seconds 2
+          $uninstaller = Join-Path $env:LOCALAPPDATA 'Programs\Coworker\unins000.exe'
+          $u = Start-Process $uninstaller -ArgumentList '/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART' -PassThru
+          if (-not $u.WaitForExit(300000)) { $u.Kill(); throw "The uninstaller was still running after 5 minutes." }
+          if ($u.ExitCode -ne 0) { throw "The uninstaller exited with $($u.ExitCode)." }
