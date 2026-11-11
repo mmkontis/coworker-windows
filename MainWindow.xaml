@@ -1,0 +1,36 @@
+<Window
+    x:Class="Coworker.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:Coworker.Controls"
+    xmlns:pages="using:Coworker.Pages"
+    Title="Coworker">
+
+    <Grid x:Name="RootGrid" CornerRadius="8">
+        <!-- Signed in: sidebar (260) and the page frame. -->
+        <Grid x:Name="MainLayout">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="260" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <controls:Sidebar x:Name="Sidebar" />
+
+            <Grid Grid.Column="1" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="32" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Frame x:Name="ContentFrame" Grid.Row="1" />
+            </Grid>
+        </Grid>
+
+        <!-- Window drag strip (also the space of the caption buttons); the sidebar's own top padding
+             keeps it free of controls. -->
+        <Border x:Name="TitleBarDragRegion" Height="32" VerticalAlignment="Top" Background="Transparent" />
+
+        <!-- Signed out, and first run: these replace the whole window (Mac AppView). -->
+        <pages:LoginPage x:Name="LoginPage" Visibility="Collapsed" />
+        <controls:OnboardingView x:Name="Onboarding" Visibility="Collapsed" />
+    </Grid>
+</Window>

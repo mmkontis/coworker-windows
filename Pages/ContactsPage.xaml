@@ -1,0 +1,84 @@
+<Page
+    x:Class="Coworker.Pages.ContactsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Spacing="16" Padding="24,24,24,16">
+            <!-- View Toggle -->
+            <Grid HorizontalAlignment="Center">
+                <Border CornerRadius="8" Background="{ThemeResource ControlFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}" BorderThickness="1"
+                        Padding="4">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <Button x:Name="CallsTab" Click="OnCallsTab" CornerRadius="6"
+                                Padding="16,8" MinWidth="120">
+                            <TextBlock Text="Recent Calls" FontSize="13" />
+                        </Button>
+                        <Button x:Name="ContactsTab" Click="OnContactsTab" CornerRadius="6"
+                                Padding="16,8" MinWidth="120">
+                            <TextBlock Text="Contacts" FontSize="13" />
+                        </Button>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Search -->
+            <Grid CornerRadius="12" Padding="16,12"
+                  Background="{ThemeResource ControlFillColorDefaultBrush}"
+                  BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
+                  BorderThickness="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <FontIcon Glyph="&#xE721;" FontSize="16"
+                          Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                          Margin="0,0,12,0" />
+                <TextBox Grid.Column="1" x:Name="SearchBox"
+                         PlaceholderText="Search contacts..."
+                         BorderThickness="0" Background="Transparent" FontSize="16"
+                         TextChanged="OnSearchChanged" />
+            </Grid>
+        </StackPanel>
+
+        <!-- Content -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel x:Name="ContentPanel" Spacing="0" Padding="0,0,0,32" />
+        </ScrollViewer>
+
+        <!-- Calls Empty -->
+        <StackPanel x:Name="CallsEmptyState" Grid.Row="1"
+                    VerticalAlignment="Center" HorizontalAlignment="Center"
+                    Visibility="Collapsed" Spacing="16">
+            <FontIcon Glyph="&#xE717;" FontSize="48"
+                      Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                      HorizontalAlignment="Center" />
+            <TextBlock Text="No Recent Calls Yet" FontSize="20"
+                       FontWeight="SemiBold" HorizontalAlignment="Center" />
+            <TextBlock Text="Recent calls will appear here after Coworker places or receives calls."
+                       FontSize="14" Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                       TextAlignment="Center" TextWrapping="Wrap" MaxWidth="400" />
+        </StackPanel>
+
+        <!-- Contacts Empty -->
+        <StackPanel x:Name="ContactsEmptyState" Grid.Row="1"
+                    VerticalAlignment="Center" HorizontalAlignment="Center"
+                    Visibility="Collapsed" Spacing="16">
+            <FontIcon Glyph="&#xE77B;" FontSize="64"
+                      Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                      HorizontalAlignment="Center" />
+            <TextBlock Text="No Contacts Found" FontSize="20"
+                       FontWeight="SemiBold" HorizontalAlignment="Center" />
+            <TextBlock Text="Import contacts from Windows People app or add them manually."
+                       FontSize="14" Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                       TextAlignment="Center" TextWrapping="Wrap" MaxWidth="420" />
+        </StackPanel>
+    </Grid>
+</Page>

@@ -1,0 +1,25 @@
+<UserControl
+    x:Class="Coworker.Controls.AutoEnterCard"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Width="340">
+
+    <!-- Mac ActiveAutoEnterView: the app in front, with a switch that presses Return after a dictation
+         pasted into it. Radius 14, hairline stroke. -->
+    <Grid Height="52" Padding="12,0" ColumnSpacing="8" CornerRadius="14" BorderThickness="1"
+          BorderBrush="{ThemeResource PopoverStroke}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Image x:Name="AppIcon" Width="24" Height="24" VerticalAlignment="Center" />
+        <TextBlock x:Name="AppName" Grid.Column="1" FontSize="12" FontWeight="Medium" MaxLines="1"
+                   TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+        <TextBlock Grid.Column="2" Text="Auto Enter" FontSize="11" VerticalAlignment="Center"
+                   Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+        <ToggleSwitch x:Name="Toggle" Grid.Column="3" OnContent="" OffContent="" MinWidth="0" Toggled="OnToggled"
+                      AutomationProperties.Name="Auto Enter" AutomationProperties.AutomationId="auto-enter-toggle" />
+    </Grid>
+</UserControl>

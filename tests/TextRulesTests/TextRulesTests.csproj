@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Tests for the paste-time text rules (Paste\DictationTextRules.cs) and the take's field descriptor
+       (Transcription\TakeField.cs). Neither has a WinUI dependency, so the source files are compiled straight
+       into this test assembly and the tests run on any OS.
+         dotnet test tests\TextRulesTests -->
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <RootNamespace>Coworker.TextRulesTests</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\Paste\DictationTextRules.cs" Link="Core\DictationTextRules.cs" />
+    <Compile Include="..\..\Transcription\TakeField.cs" Link="Core\TakeField.cs" />
+  </ItemGroup>
+
+</Project>

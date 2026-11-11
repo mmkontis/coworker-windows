@@ -1,0 +1,30 @@
+# Build output
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# VS files
+.vs/
+*.rsuser
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Release pipeline output (installer\create_installer.ps1): installers are never committed
+installer/build/
+installer/release/

@@ -1,0 +1,21 @@
+<UserControl
+    x:Class="Coworker.Controls.ProfileMenuRow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Mac UserProfileMenuRow: icon 14 semibold in an 18 column, title 13 medium, a filled check when
+         selected; padding 12x9, radius 10; selected rows get a stronger fill and the accent colour. -->
+    <Button x:Name="RowButton" Style="{StaticResource PopoverRowButtonStyle}" Click="OnClick">
+        <Grid Padding="12,9" ColumnSpacing="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="18" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <FontIcon x:Name="Icon" FontSize="14" HorizontalAlignment="Center" />
+            <TextBlock x:Name="TitleText" Grid.Column="1" FontSize="13" FontWeight="Medium" VerticalAlignment="Center"
+                       TextTrimming="CharacterEllipsis" MaxLines="1" />
+            <FontIcon x:Name="CheckIcon" Grid.Column="2" Glyph="&#xEC61;" FontSize="14" Visibility="Collapsed" />
+        </Grid>
+    </Button>
+</UserControl>

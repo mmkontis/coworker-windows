@@ -1,0 +1,289 @@
+<Page
+    x:Class="Coworker.Pages.VoiceCommandsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:models="using:Coworker.Models">
+
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ms-appx:///Controls/VoiceCommandResources.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Header (Mac DesktopPageHeader): back link, icon tile, title, subtitle, New Command / Cancel. -->
+        <StackPanel Grid.Row="0" Spacing="10" Padding="24,16,24,12">
+            <Button Style="{StaticResource CommandPlainButtonStyle}" HorizontalAlignment="Left"
+                    Click="OnBackClick" AutomationProperties.Name="Back to Dashboard">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <FontIcon Glyph="&#xE76B;" FontSize="11" FontWeight="Bold" Foreground="{StaticResource CwAccentBrush}" />
+                    <TextBlock Text="Dashboard" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource CwAccentBrush}" />
+                </StackPanel>
+            </Button>
+
+            <Grid ColumnSpacing="14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Border CornerRadius="12" Width="42" Height="42">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#332473F2" Offset="0" />
+                            <GradientStop Color="#1F4DD9FF" Offset="1" />
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <FontIcon Glyph="&#xE945;" FontSize="20" FontWeight="SemiBold"
+                              Foreground="{StaticResource CwAccentBrush}"
+                              HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+
+                <StackPanel Grid.Column="1" Spacing="3" VerticalAlignment="Center">
+                    <TextBlock Text="Voice Commands" FontSize="22" FontWeight="Bold" />
+                    <TextBlock x:Name="SubtitleText" FontSize="13"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                </StackPanel>
+
+                <Button x:Name="HeaderButton" Grid.Column="2" Style="{StaticResource CommandPlainButtonStyle}"
+                        VerticalAlignment="Center" Click="OnToggleFormClick">
+                    <Grid>
+                        <Border x:Name="NewButtonFill" CornerRadius="10" Background="{StaticResource CommandAccentFill}" />
+                        <Border x:Name="CancelButtonFill" CornerRadius="10" Background="{ThemeResource CommandFillMedium}"
+                                Visibility="Collapsed" />
+                        <StackPanel x:Name="NewButtonContent" Orientation="Horizontal" Spacing="6" Padding="16,10">
+                            <FontIcon Glyph="&#xE710;" FontSize="12" FontWeight="Bold" Foreground="{StaticResource CwAccentBrush}" />
+                            <TextBlock Text="New Command" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource CwAccentBrush}" />
+                        </StackPanel>
+                        <StackPanel x:Name="CancelButtonContent" Orientation="Horizontal" Spacing="6" Padding="16,10"
+                                    Visibility="Collapsed">
+                            <FontIcon Glyph="&#xE711;" FontSize="12" FontWeight="Bold" />
+                            <TextBlock Text="Cancel" FontSize="13" FontWeight="SemiBold" />
+                        </StackPanel>
+                    </Grid>
+                </Button>
+            </Grid>
+        </StackPanel>
+
+        <!-- A failed save or delete: the Mac only shows errors while the list is empty. -->
+        <InfoBar x:Name="ErrorBar" Grid.Row="1" Severity="Error" IsOpen="False" IsClosable="True"
+                 Margin="24,0,24,12" />
+
+        <!-- Add / edit form. -->
+        <Border x:Name="FormPanel" Grid.Row="2" Visibility="Collapsed" Margin="24,0,24,16" Padding="16"
+                CornerRadius="12" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="#402473F2" BorderThickness="1" RenderTransformOrigin="0.5,0">
+            <Border.RenderTransform>
+                <TranslateTransform x:Name="FormTranslate" />
+            </Border.RenderTransform>
+
+            <StackPanel Spacing="12">
+                <Grid ColumnSpacing="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Border x:Name="IconPreviewTile" Width="44" Height="44" CornerRadius="10" VerticalAlignment="Top">
+                        <FontIcon x:Name="IconPreview" FontSize="18" FontWeight="Medium"
+                                  HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+
+                    <StackPanel Grid.Column="1" Spacing="8">
+                        <TextBox x:Name="TriggerBox" Style="{StaticResource CommandTextBoxStyle}" FontSize="14"
+                                 Padding="12,10"
+                                 PlaceholderText="Trigger phrase (e.g. &quot;call&quot;, &quot;send hubspot&quot;)"
+                                 AutomationProperties.Name="Trigger phrase" TextChanged="OnTriggerChanged" />
+
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="280" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Border CornerRadius="8" Padding="2" Background="{ThemeResource CommandFillSoft}"
+                                    AutomationProperties.Name="Match mode">
+                                <Grid ColumnSpacing="2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <ToggleButton x:Name="StartsWithToggle" Style="{StaticResource CommandSegmentStyle}"
+                                                  Content="Starts with" Click="OnStartsWithClick" />
+                                    <ToggleButton x:Name="ContainsToggle" Grid.Column="1" Style="{StaticResource CommandSegmentStyle}"
+                                                  Content="Contains anywhere" Click="OnContainsClick" />
+                                </Grid>
+                            </Border>
+
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right"
+                                        VerticalAlignment="Center">
+                                <TextBlock Text="Enabled" FontSize="12" VerticalAlignment="Center" />
+                                <ToggleSwitch x:Name="EnabledSwitch" IsOn="True" OnContent="" OffContent="" MinWidth="0"
+                                              AutomationProperties.Name="Enabled" />
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+
+                <StackPanel Spacing="8">
+                    <Grid ColumnSpacing="8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Actions" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock x:Name="StepsHint" Grid.Column="1" FontSize="11" VerticalAlignment="Center"
+                                   Visibility="Collapsed" Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
+                        <Button Grid.Column="3" Style="{StaticResource CommandPlainButtonStyle}" Click="OnAddStepClick"
+                                CornerRadius="6" Background="#1A2473F2" AutomationProperties.Name="Add step">
+                            <StackPanel Orientation="Horizontal" Spacing="4" Padding="10,5">
+                                <FontIcon Glyph="&#xE710;" FontSize="10" FontWeight="Bold" Foreground="{StaticResource CwAccentBrush}" />
+                                <TextBlock Text="Add Step" FontSize="12" FontWeight="Medium" Foreground="{StaticResource CwAccentBrush}" />
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+
+                    <StackPanel x:Name="StepsPanel" Spacing="8" />
+                </StackPanel>
+
+                <Button x:Name="SaveButton" Style="{StaticResource CommandPlainButtonStyle}" HorizontalAlignment="Right"
+                        Click="OnSaveClick">
+                    <Grid>
+                        <Border x:Name="SaveFillEnabled" CornerRadius="10" Background="{StaticResource CwAccentBrush}" />
+                        <Border x:Name="SaveFillDisabled" CornerRadius="10" Background="{ThemeResource CommandFillStrong}"
+                                Visibility="Collapsed" />
+                        <StackPanel Orientation="Horizontal" Spacing="6" Padding="20,10">
+                            <FontIcon x:Name="SaveIcon" FontSize="12" FontWeight="Bold" Foreground="White" />
+                            <TextBlock x:Name="SaveText" FontSize="13" FontWeight="SemiBold" Foreground="White" />
+                        </StackPanel>
+                    </Grid>
+                </Button>
+            </StackPanel>
+        </Border>
+
+        <!-- List area: loading, error, empty or the commands. -->
+        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto">
+            <Grid>
+                <StackPanel x:Name="LoadingPanel" Padding="0,60,0,0" Spacing="8" HorizontalAlignment="Center">
+                    <ProgressRing Width="32" Height="32" IsActive="True" />
+                    <TextBlock Text="Loading commands..." FontSize="13" HorizontalAlignment="Center"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                </StackPanel>
+
+                <StackPanel x:Name="ErrorPanel" Padding="0,60,0,0" Spacing="12" HorizontalAlignment="Center"
+                            Visibility="Collapsed">
+                    <FontIcon Glyph="&#xE7BA;" FontSize="32" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                    <TextBlock x:Name="ErrorText" FontSize="14" TextAlignment="Center" TextWrapping="Wrap" MaxWidth="480"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                    <Button Content="Retry" HorizontalAlignment="Center" Click="OnRetryClick" />
+                </StackPanel>
+
+                <StackPanel x:Name="EmptyPanel" Padding="0,60,0,0" Spacing="16" HorizontalAlignment="Center"
+                            Visibility="Collapsed">
+                    <Grid Width="80" Height="80" HorizontalAlignment="Center">
+                        <Ellipse Fill="#142473F2" />
+                        <FontIcon Glyph="&#xE945;" FontSize="32" Opacity="0.5" Foreground="{StaticResource CwAccentBrush}"
+                                  HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Grid>
+                    <TextBlock Text="No voice commands yet" FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                    <TextBlock Text="Create commands like &quot;call&quot; or &quot;send hubspot&quot; that&#x0a;trigger actions when spoken during dictation."
+                               FontSize="13" TextAlignment="Center" HorizontalAlignment="Center"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                    <Button Style="{StaticResource CommandPlainButtonStyle}" HorizontalAlignment="Center"
+                            Click="OnCreateFirstClick">
+                        <Grid>
+                            <Border CornerRadius="10" Background="{StaticResource CwAccentBrush}" />
+                            <StackPanel Orientation="Horizontal" Spacing="6" Padding="20,10">
+                                <FontIcon Glyph="&#xE710;" FontSize="12" FontWeight="Bold" Foreground="White" />
+                                <TextBlock Text="Create First Command" FontSize="13" FontWeight="SemiBold" Foreground="White" />
+                            </StackPanel>
+                        </Grid>
+                    </Button>
+                </StackPanel>
+
+                <ItemsRepeater x:Name="RowsRepeater" Margin="24,0,24,32" Visibility="Collapsed">
+                    <ItemsRepeater.Layout>
+                        <StackLayout Spacing="8" />
+                    </ItemsRepeater.Layout>
+                    <DataTemplate x:DataType="models:CommandRowViewModel">
+                        <Border CornerRadius="12" Padding="14" BorderThickness="1" BorderBrush="#14B3D9FF"
+                                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+                            <Grid ColumnSpacing="14">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="40" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <Border Width="40" Height="40" CornerRadius="10" Background="{x:Bind IconTileBrush}">
+                                    <FontIcon Glyph="{x:Bind Glyph}" FontSize="16" FontWeight="Medium"
+                                              Foreground="{x:Bind IconBrush}"
+                                              HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+
+                                <StackPanel Grid.Column="1" Spacing="3" VerticalAlignment="Center">
+                                    <TextBlock Text="{x:Bind Title}" FontSize="15" FontWeight="SemiBold"
+                                               TextTrimming="CharacterEllipsis" />
+                                    <Grid ColumnSpacing="6">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <Border CornerRadius="999" Padding="6,2" VerticalAlignment="Center"
+                                                Background="{ThemeResource CommandFillSoft}">
+                                            <TextBlock Text="{x:Bind ModeLabel}" FontSize="11" FontWeight="Medium"
+                                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                        </Border>
+                                        <TextBlock Grid.Column="1" Text="{x:Bind ActionsSummary}" FontSize="11" MaxLines="1"
+                                                   TextTrimming="CharacterEllipsis" VerticalAlignment="Center"
+                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                        <Border Grid.Column="2" CornerRadius="999" Padding="5,1" VerticalAlignment="Center"
+                                                Background="#1A2473F2" Visibility="{x:Bind IsMultiAction}">
+                                            <TextBlock Text="{x:Bind StepsLabel}" FontSize="10" FontWeight="Medium"
+                                                       Foreground="{StaticResource CwAccentBrush}" />
+                                        </Border>
+                                    </Grid>
+                                </StackPanel>
+
+                                <Grid Grid.Column="2" Width="8" Height="8" VerticalAlignment="Center">
+                                    <Ellipse Fill="#FF34C759" Visibility="{x:Bind IsEnabled}" />
+                                    <Ellipse Fill="{ThemeResource CommandFillStrong}" Visibility="{x:Bind IsDisabled}" />
+                                </Grid>
+
+                                <Button Grid.Column="3" Style="{StaticResource CommandPlainButtonStyle}" Width="30" Height="30"
+                                        CornerRadius="15" Background="{ThemeResource CommandFillSoft}" Tag="{x:Bind}"
+                                        Click="OnEditClick" AutomationProperties.Name="{x:Bind EditLabel}">
+                                    <FontIcon Glyph="&#xE70F;" FontSize="12" FontWeight="Medium"
+                                              Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                </Button>
+
+                                <Button Grid.Column="4" Style="{StaticResource CommandPlainButtonStyle}" Width="30" Height="30"
+                                        CornerRadius="15" Background="#0FFF3B30" Tag="{x:Bind}"
+                                        Click="OnDeleteClick" AutomationProperties.Name="{x:Bind DeleteLabel}">
+                                    <FontIcon Glyph="&#xE74D;" FontSize="12" FontWeight="Medium"
+                                              Foreground="{StaticResource CommandDangerText}" />
+                                </Button>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsRepeater>
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+</Page>

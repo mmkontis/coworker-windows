@@ -1,0 +1,14 @@
+<UserControl
+    x:Class="Coworker.Controls.OnboardingButton"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- The big button of the onboarding steps: a white pill with deep-blue text (Mac: 15 semibold,
+         padding 40x13, radius 10, shadow), or the quieter "Skip" style on a translucent fill. -->
+    <Grid>
+        <Border x:Name="ShadowHost" />
+        <Button x:Name="Root" Padding="40,13" CornerRadius="10" BorderThickness="0" Click="OnClick">
+            <TextBlock x:Name="Label" FontSize="15" />
+        </Button>
+    </Grid>
+</UserControl>

@@ -1,0 +1,45 @@
+<UserControl
+    x:Class="Coworker.Controls.ProfileMenu"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:Coworker.Controls"
+    Width="260">
+
+    <!-- The popover over the sidebar footer (Mac UserProfileMenuContent). -->
+    <StackPanel Padding="0,0,0,6">
+        <StackPanel Spacing="4" Margin="14,14,14,10" x:Name="Header">
+            <TextBlock x:Name="EmailText" FontSize="13" FontWeight="SemiBold" MaxLines="1"
+                       TextTrimming="CharacterEllipsis" Foreground="{ThemeResource TextFillColorPrimaryBrush}" />
+            <TextBlock Text="Pro Plan" FontSize="11" FontWeight="Medium" Foreground="{StaticResource CwAccentBrush}" />
+        </StackPanel>
+
+        <!-- Classic design only: the tabs its sidebar does not list. -->
+        <StackPanel x:Name="MoreSection" Visibility="Collapsed">
+            <TextBlock Text="MORE" Style="{StaticResource MenuSectionTitle}" Margin="14,0,14,8" />
+            <StackPanel x:Name="MoreRows" Spacing="6" Margin="8,0,8,12" />
+            <Border Height="1" Margin="8,0,8,10" Background="{ThemeResource PopoverStroke}" />
+        </StackPanel>
+
+        <controls:ProfileMenuRow x:Name="SettingsRow" Glyph="&#xE713;" Title="Settings" Margin="8,0" Click="OnSettingsClick" />
+        <controls:ProfileMenuRow x:Name="AppearanceRow" Glyph="&#xE9E9;" Title="Appearance &amp; navigation" Margin="8,0"
+                                 Click="OnAppearanceClick" />
+
+        <StackPanel x:Name="AppearanceOptions" Visibility="Collapsed" Spacing="2" Margin="8,0">
+            <controls:ProfileMenuRow x:Name="SectionsRow" Glyph="&#xE90C;" Click="OnDesignClick" />
+            <controls:ProfileMenuRow x:Name="DropdownRow" Glyph="&#xE90C;" Click="OnDesignClick" />
+            <controls:ProfileMenuRow x:Name="ClassicRow" Glyph="&#xE90C;" Click="OnDesignClick" />
+            <Border Height="1" Margin="0,8" Background="{ThemeResource PopoverStroke}" />
+            <controls:ProfileMenuRow x:Name="CleanRow" Glyph="&#xE7A1;" Title="Clean" Click="OnThemeClick" />
+            <controls:ProfileMenuRow x:Name="AuroraRow" Glyph="&#xE7A1;" Title="Aurora" Click="OnThemeClick" />
+        </StackPanel>
+
+        <Border Height="1" Margin="8" Background="{ThemeResource PopoverStroke}" />
+
+        <TextBlock Text="ACCOUNT" Style="{StaticResource MenuSectionTitle}" Margin="14,0,14,8" />
+        <StackPanel Spacing="6" Margin="8,0,8,8">
+            <controls:ProfileMenuRow Glyph="&#xE77B;" Title="Edit Profile" Click="OnEditProfileClick" />
+            <controls:ProfileMenuRow Glyph="&#xE8C7;" Title="Billing" Click="OnBillingClick" />
+            <controls:ProfileMenuRow Glyph="&#xF3B1;" Title="Log Out" IsDestructive="True" Click="OnLogOutClick" />
+        </StackPanel>
+    </StackPanel>
+</UserControl>

@@ -1,0 +1,129 @@
+<Page
+    x:Class="Coworker.Pages.DashboardPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:Coworker.Controls">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="32" Padding="24,8,24,32">
+            <!-- Header -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Dashboard" FontSize="32" FontWeight="Bold" />
+                    <TextBlock Text="Welcome back" FontSize="14"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4" VerticalAlignment="Top">
+                    <!-- The period for words and time saved; the choice is remembered. -->
+                    <Button x:Name="Range7D" Content="7D" Tag="7" Click="OnRangeClick"
+                            CornerRadius="8" Padding="12,6" FontSize="12" FontWeight="SemiBold"
+                            AutomationProperties.Name="Last 7 days" />
+                    <Button x:Name="Range30D" Content="30D" Tag="30" Click="OnRangeClick"
+                            CornerRadius="8" Padding="12,6" FontSize="12" FontWeight="SemiBold"
+                            AutomationProperties.Name="Last 30 days" />
+                    <Button Click="OnRefresh" Margin="8,0,0,0" AutomationProperties.Name="Refresh">
+                        <FontIcon Glyph="&#xE72C;" FontSize="14" />
+                    </Button>
+                </StackPanel>
+            </Grid>
+
+            <!-- Stats Grid -->
+            <ItemsRepeater x:Name="MetricsRepeater">
+                <ItemsRepeater.Layout>
+                    <UniformGridLayout MinItemWidth="240" MinItemHeight="160"
+                                       ItemsStretch="Fill" MinColumnSpacing="16"
+                                       MinRowSpacing="16" />
+                </ItemsRepeater.Layout>
+                <ItemsRepeater.ItemTemplate>
+                    <DataTemplate>
+                        <controls:HandButton Click="OnMetricClick" Tag="{Binding Tag}"
+                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"
+                                CornerRadius="20" Padding="20"
+                                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1">
+                            <!-- Icon and label share a row so the value and its helper line fit the cell.
+                                 While loading, soft bars stand where the text will be (never a 0). -->
+                            <StackPanel Spacing="12">
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <Border CornerRadius="10" Width="32" Height="32"
+                                            Background="#192473F2">
+                                        <FontIcon Glyph="{Binding Icon}" FontSize="15"
+                                                  Foreground="{StaticResource CwAccentBrush}"
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center" />
+                                    </Border>
+                                    <TextBlock Text="{Binding Label}" FontSize="11" VerticalAlignment="Center"
+                                               FontWeight="SemiBold" CharacterSpacing="50"
+                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                </StackPanel>
+                                <StackPanel Spacing="4">
+                                    <Grid Height="34">
+                                        <TextBlock Text="{Binding Value}" FontSize="28" FontWeight="Bold"
+                                                   LineHeight="34" LineStackingStrategy="BlockLineHeight"
+                                                   Visibility="{Binding ValueVisibility}" />
+                                        <controls:SkeletonBlock Width="112" Height="24" VerticalAlignment="Center"
+                                                                Visibility="{Binding SkeletonVisibility}" />
+                                    </Grid>
+                                    <Grid Height="16">
+                                        <TextBlock Text="{Binding Helper}" FontSize="12" MaxLines="1"
+                                                   TextTrimming="CharacterEllipsis"
+                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                   Visibility="{Binding ValueVisibility}" />
+                                        <controls:SkeletonBlock Width="76" Height="10" CornerRadius="5" VerticalAlignment="Center"
+                                                                Visibility="{Binding SkeletonVisibility}" />
+                                    </Grid>
+                                </StackPanel>
+                            </StackPanel>
+                        </controls:HandButton>
+                    </DataTemplate>
+                </ItemsRepeater.ItemTemplate>
+            </ItemsRepeater>
+
+            <!-- Quick Actions -->
+            <StackPanel Spacing="16">
+                <TextBlock Text="Quick Actions" FontSize="18" FontWeight="SemiBold" />
+                <ItemsRepeater x:Name="ActionsRepeater">
+                    <ItemsRepeater.Layout>
+                        <UniformGridLayout MinItemWidth="200" MinItemHeight="72"
+                                           ItemsStretch="Fill" MinColumnSpacing="16"
+                                           MinRowSpacing="16" />
+                    </ItemsRepeater.Layout>
+                    <ItemsRepeater.ItemTemplate>
+                        <DataTemplate>
+                            <controls:HandButton HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Left"
+                                    CornerRadius="16" Padding="16"
+                                    Click="OnActionClick" Tag="{Binding Tag}">
+                                <Grid ColumnSpacing="16">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Border CornerRadius="21" Width="42" Height="42"
+                                            Background="{ThemeResource ControlFillColorDefaultBrush}">
+                                        <FontIcon Glyph="{Binding Icon}" FontSize="18"
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center" />
+                                    </Border>
+                                    <StackPanel Grid.Column="1" Spacing="2"
+                                                VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Title}" FontSize="14"
+                                                   FontWeight="SemiBold" />
+                                        <TextBlock Text="{Binding Description}" FontSize="12"
+                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                    </StackPanel>
+                                </Grid>
+                            </controls:HandButton>
+                        </DataTemplate>
+                    </ItemsRepeater.ItemTemplate>
+                </ItemsRepeater>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

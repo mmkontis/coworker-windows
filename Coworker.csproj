@@ -1,0 +1,82 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows10.0.22621.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <RootNamespace>Coworker</RootNamespace>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Platforms>x86;x64;ARM64</Platforms>
+    <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+    <PublishProfile>win-$(Platform).pubxml</PublishProfile>
+    <!-- Build output stays in bin\<platform>\<config>\<tfm>\ (run.ps1 and the docs expect Coworker.exe there). -->
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <UseWinUI>true</UseWinUI>
+    <EnableMsixTooling>true</EnableMsixTooling>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <WindowsPackageType>None</WindowsPackageType>
+    <ApplicationIcon>Assets\coworker.ico</ApplicationIcon>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <!-- Version: the single source of truth for the app, the installer and the update feed.
+       AppVersion = Mac MARKETING_VERSION (shown to users, sparkle:shortVersionString), three numeric parts.
+       AppBuild   = Mac CURRENT_PROJECT_VERSION (sparkle:version); must increase with every release, it is
+                    what the updater compares. Read at runtime by ApiConstants.AppVersion / AppBuild and by
+                    installer\create_installer.ps1 (dotnet msbuild -getProperty). CI can override:
+                    dotnet publish -p:AppVersion=1.2.0 -p:AppBuild=7 -->
+  <PropertyGroup>
+    <AppVersion>1.0.0</AppVersion>
+    <AppBuild>1</AppBuild>
+    <Version>$(AppVersion)</Version>
+    <AssemblyVersion>$(AppVersion).$(AppBuild)</AssemblyVersion>
+    <FileVersion>$(AppVersion).$(AppBuild)</FileVersion>
+    <InformationalVersion>$(AppVersion)</InformationalVersion>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <Company>Humanlike</Company>
+    <Product>Coworker</Product>
+    <AssemblyTitle>Coworker</AssemblyTitle>
+    <Description>Coworker for Windows - voice dictation and AI assistant</Description>
+    <Copyright>Copyright (c) Humanlike</Copyright>
+  </PropertyGroup>
+
+  <!-- Update trust: the Ed25519 PUBLIC key (base64) that verifies update installers (Mac: SUPublicEDKey).
+       Empty = updating is switched off. Generate the pair with installer\tools\UpdateSigner (installer\README.md);
+       the private key stays outside the repo. CI can pass it: -p:UpdatePublicKey=... -->
+  <PropertyGroup>
+    <UpdatePublicKey>znsAUVaB3hZZuQe+JLXuGVfUMksPvXRpShdnNyMvYK4=</UpdatePublicKey>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(UpdatePublicKey)' != ''">
+    <AssemblyMetadata Include="UpdatePublicKey" Value="$(UpdatePublicKey)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.*" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.*" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.*" />
+    <PackageReference Include="System.Text.Json" Version="9.*" />
+    <PackageReference Include="NAudio" Version="2.*" />
+    <PackageReference Include="SkiaSharp" Version="3.119.0" />
+    <PackageReference Include="FlaUI.UIA3" Version="5.0.0" />
+    <PackageReference Include="LiveChartsCore.SkiaSharpView.WinUI" Version="2.0.0-rc6.1" />
+    <!-- Auto-update: Sparkle-format appcast + Ed25519 verification (no UI package: the update UI is Views\UpdateWindow). -->
+    <PackageReference Include="NetSparkleUpdater.SparkleUpdater" Version="3.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- CopyToPublishDirectory: without it `dotnet publish` leaves Assets\ out (tray icon, window icon). -->
+    <Content Include="Assets\**" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!-- The installer scripts, the updater tests/tools and the unit tests (tests\) are separate projects, not part of the app. -->
+  <ItemGroup>
+    <Compile Remove="installer\**" />
+    <EmbeddedResource Remove="installer\**" />
+    <None Remove="installer\**" />
+    <Page Remove="installer\**" />
+    <Compile Remove="tests\**" />
+    <EmbeddedResource Remove="tests\**" />
+    <None Remove="tests\**" />
+    <Page Remove="tests\**" />
+  </ItemGroup>
+</Project>

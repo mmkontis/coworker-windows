@@ -1,0 +1,134 @@
+<UserControl
+    x:Class="Coworker.Controls.OnboardingView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:Coworker.Controls">
+
+    <UserControl.Resources>
+        <Style x:Key="Eyebrow" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontWeight" Value="Light" />
+            <Setter Property="Foreground" Value="#80FFFFFF" />
+            <Setter Property="CharacterSpacing" Value="300" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0,20,0,0" />
+        </Style>
+        <Style x:Key="StepHeadline" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="36" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0,10,0,0" />
+        </Style>
+        <Style x:Key="StepBody" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Foreground" Value="#80FFFFFF" />
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="MaxWidth" Value="380" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0,10,0,0" />
+        </Style>
+    </UserControl.Resources>
+
+    <!-- Mac OnboardingView: the sign-in gradient and background image fill the window (the Mac window is
+         exactly the 900x700 panel, so there is no frame around it). The progress dots sit 24 above the
+         current step and the pair is centred, as on the Mac. -->
+    <Grid Background="{StaticResource SidebarGradientBrush}">
+            <Image Source="ms-appx:///Assets/sidebar-background.png" Stretch="UniformToFill"
+                   HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" />
+
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <StackPanel x:Name="Dots" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center" Margin="0,24,0,0"
+                            AutomationProperties.Name="Setup progress" />
+
+                <Grid>
+                    <!-- Welcome -->
+                    <StackPanel x:Name="WelcomeStep" Padding="48,32" HorizontalAlignment="Center">
+                        <Border Width="72" Height="72" CornerRadius="18" HorizontalAlignment="Center">
+                            <Image Source="ms-appx:///Assets/coworker-icon.png" Stretch="UniformToFill" />
+                        </Border>
+                        <TextBlock Text="WELCOME TO COWORKER" Style="{StaticResource Eyebrow}" />
+                        <TextBlock FontSize="46" FontWeight="Bold" Foreground="White" TextAlignment="Center" LineHeight="58"
+                                   HorizontalAlignment="Center" Margin="0,16,0,0">
+                            <Run Text="Save up to 2 hours a day" /><LineBreak /><Run Text="typing with your voice." />
+                        </TextBlock>
+                        <controls:OnboardingButton Text="Get Started" HorizontalAlignment="Center" Margin="0,36,0,0"
+                                                   Click="OnNext" />
+                    </StackPanel>
+
+                    <!-- Microphone -->
+                    <StackPanel x:Name="MicrophoneStep" Padding="48,32" HorizontalAlignment="Center" Visibility="Collapsed">
+                        <Grid Width="72" Height="72" HorizontalAlignment="Center">
+                            <Ellipse Fill="#1AFFFFFF" />
+                            <FontIcon Glyph="&#xE720;" FontSize="28" Foreground="White" />
+                        </Grid>
+                        <TextBlock Text="MICROPHONE" Style="{StaticResource Eyebrow}" />
+                        <TextBlock Text="We need to hear you." Style="{StaticResource StepHeadline}" />
+                        <TextBlock Style="{StaticResource StepBody}"
+                                   Text="Coworker uses your microphone to transcribe speech." />
+                        <StackPanel x:Name="MicrophoneGranted" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center"
+                                    Margin="0,28,0,0" Padding="0,4" Visibility="Collapsed">
+                            <FontIcon Glyph="&#xEC61;" FontSize="16" Foreground="#FF34C759" />
+                            <TextBlock Text="Microphone access granted" FontSize="14" Foreground="White" />
+                        </StackPanel>
+                        <TextBlock x:Name="MicrophoneHint" FontSize="12" Foreground="#80FFFFFF" MaxWidth="380" TextWrapping="Wrap"
+                                   TextAlignment="Center" HorizontalAlignment="Center" Margin="0,16,0,0" Visibility="Collapsed" />
+                        <StackPanel x:Name="MicrophoneButtons" Orientation="Horizontal" Spacing="16" HorizontalAlignment="Center">
+                            <controls:OnboardingButton x:Name="GrantMicrophone" Text="Grant Access" Click="OnGrantMicrophone" />
+                            <controls:OnboardingButton x:Name="SkipMicrophone" Text="Skip" IsPrimary="False" Click="OnNext" Visibility="Collapsed" />
+                            <controls:OnboardingButton x:Name="ContinueMicrophone" Text="Continue" Click="OnNext" Visibility="Collapsed" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Auto-paste (the Mac's Accessibility step: Windows needs no permission to paste) -->
+                    <StackPanel x:Name="PasteStep" Padding="48,32" HorizontalAlignment="Center" Visibility="Collapsed">
+                        <Grid Width="72" Height="72" HorizontalAlignment="Center">
+                            <Ellipse Fill="#1AFFFFFF" />
+                            <FontIcon Glyph="&#xE765;" FontSize="26" Foreground="White" />
+                        </Grid>
+                        <TextBlock Text="AUTO-PASTE" Style="{StaticResource Eyebrow}" />
+                        <TextBlock Text="Paste without lifting a finger." Style="{StaticResource StepHeadline}" />
+                        <TextBlock Style="{StaticResource StepBody}"
+                                   Text="Coworker pastes transcribed text into the active app with Ctrl&#x2060;+V. Elevated (administrator) windows can't receive it, but the text is still copied to the clipboard." />
+                        <Grid Background="#14FFFFFF" CornerRadius="12" Padding="24,16" Margin="0,24,0,0" ColumnSpacing="16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Spacing="3">
+                                <TextBlock Text="Enable Auto-Paste" FontSize="14" FontWeight="Medium" Foreground="White" />
+                                <TextBlock Text="Automatically paste transcribed text into the active app" FontSize="12" Foreground="#80FFFFFF" />
+                            </StackPanel>
+                            <ToggleSwitch x:Name="AutoPasteToggle" Grid.Column="1" OnContent="" OffContent="" MinWidth="0"
+                                          VerticalAlignment="Center" Toggled="OnAutoPasteToggled"
+                                          AutomationProperties.Name="Enable Auto-Paste">
+                                <ToggleSwitch.Resources>
+                                    <SolidColorBrush x:Key="ToggleSwitchKnobFillOn" Color="White" />
+                                    <SolidColorBrush x:Key="ToggleSwitchKnobFillOnPointerOver" Color="White" />
+                                    <SolidColorBrush x:Key="ToggleSwitchKnobFillOnPressed" Color="White" />
+                                </ToggleSwitch.Resources>
+                            </ToggleSwitch>
+                        </Grid>
+                        <controls:OnboardingButton Text="Continue" HorizontalAlignment="Center" Margin="0,36,0,0" Click="OnNext" />
+                    </StackPanel>
+
+                    <!-- Done -->
+                    <StackPanel x:Name="DoneStep" Padding="8,40" Spacing="28" HorizontalAlignment="Center" Visibility="Collapsed">
+                        <Grid Width="88" Height="88" HorizontalAlignment="Center">
+                            <Ellipse Fill="#3334C759" />
+                            <FontIcon Glyph="&#xEC61;" FontSize="48" Foreground="#FF34C759" />
+                        </Grid>
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="You're All Set!" FontSize="30" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" />
+                            <TextBlock x:Name="CountdownText" FontSize="15" Foreground="#99FFFFFF" MaxWidth="400" TextWrapping="Wrap"
+                                       TextAlignment="Center" HorizontalAlignment="Center" />
+                        </StackPanel>
+                        <ProgressRing IsActive="True" Width="24" Height="24" Foreground="White" Margin="0,12,0,0" />
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+    </Grid>
+</UserControl>

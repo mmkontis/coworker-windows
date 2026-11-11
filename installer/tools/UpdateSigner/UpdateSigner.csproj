@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Release tool: Ed25519 key generation, signing and verification for the update feed.
+       Same crypto library the app's updater verifies with (NetSparkle's Chaos.NaCl). -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>Coworker.UpdateSigner</RootNamespace>
+    <AssemblyName>UpdateSigner</AssemblyName>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NetSparkleUpdater.Chaos.NaCl" Version="0.9.4" />
+  </ItemGroup>
+
+</Project>

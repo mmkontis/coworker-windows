@@ -1,0 +1,246 @@
+<Page
+    x:Class="Coworker.Pages.AnalyticsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:lvc="using:LiveChartsCore.SkiaSharpView.WinUI">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="28" Padding="24,8,24,32">
+            <!-- Header -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Border CornerRadius="14" Width="48" Height="48"
+                        Background="#192473F2" Margin="0,0,16,0"
+                        VerticalAlignment="Center">
+                    <FontIcon Glyph="&#xE9D9;" FontSize="22"
+                              Foreground="{StaticResource CwAccentBrush}"
+                              HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Border>
+
+                <StackPanel Grid.Column="1" Spacing="4" VerticalAlignment="Center">
+                    <TextBlock Text="Analytics" FontSize="22" FontWeight="Bold" />
+                    <TextBlock Text="Track your productivity"
+                               FontSize="14"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                </StackPanel>
+
+                <!-- Range Selector -->
+                <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="4"
+                            VerticalAlignment="Center" Margin="0,0,12,0">
+                    <Button x:Name="Range7D" Content="7D" Click="OnRangeClick" Tag="7"
+                            CornerRadius="8" Padding="12,6" FontSize="12" FontWeight="SemiBold" />
+                    <Button x:Name="Range30D" Content="30D" Click="OnRangeClick" Tag="30"
+                            CornerRadius="8" Padding="12,6" FontSize="12" FontWeight="SemiBold" />
+                    <Button x:Name="Range90D" Content="90D" Click="OnRangeClick" Tag="90"
+                            CornerRadius="8" Padding="12,6" FontSize="12" FontWeight="SemiBold" />
+                </StackPanel>
+
+                <Button Grid.Column="4" Click="OnBackToDashboard"
+                        VerticalAlignment="Center"
+                        CornerRadius="10" Padding="14,8">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon Glyph="&#xE72B;" FontSize="13" />
+                        <TextBlock Text="Dashboard" FontSize="13" FontWeight="SemiBold" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+
+            <!-- Stats Overview Cards -->
+            <ItemsRepeater x:Name="StatsRepeater">
+                <ItemsRepeater.Layout>
+                    <UniformGridLayout MinItemWidth="220" MinItemHeight="140"
+                                       ItemsStretch="Fill" MinColumnSpacing="16"
+                                       MinRowSpacing="16" />
+                </ItemsRepeater.Layout>
+                <ItemsRepeater.ItemTemplate>
+                    <DataTemplate>
+                        <Border CornerRadius="20" Padding="20"
+                                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1">
+                            <!-- Fits the 140 tall grid cell: icon and label share the first row, so the
+                                 value and its helper line are never cut off. -->
+                            <StackPanel Spacing="10">
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <Border CornerRadius="10" Width="32" Height="32"
+                                            Background="{Binding IconBackground}">
+                                        <FontIcon Glyph="{Binding Icon}" FontSize="15"
+                                                  Foreground="{Binding IconForeground}"
+                                                  HorizontalAlignment="Center"
+                                                  VerticalAlignment="Center" />
+                                    </Border>
+                                    <TextBlock Text="{Binding Label}" FontSize="11"
+                                               FontWeight="SemiBold" CharacterSpacing="50" VerticalAlignment="Center"
+                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                </StackPanel>
+                                <StackPanel Spacing="2">
+                                    <TextBlock Text="{Binding Value}" FontSize="28" FontWeight="Bold"
+                                               LineHeight="34" LineStackingStrategy="BlockLineHeight" />
+                                    <TextBlock Text="{Binding Helper}" FontSize="12" MaxLines="1"
+                                               TextTrimming="CharacterEllipsis"
+                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsRepeater.ItemTemplate>
+            </ItemsRepeater>
+
+            <!-- Activity Chart -->
+            <Border CornerRadius="20" Padding="24"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1">
+                <StackPanel Spacing="16">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Daily Activity" FontSize="18" FontWeight="SemiBold" />
+                            <TextBlock x:Name="ChartSubtitle" Text="Last 30 Days" FontSize="12"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="16"
+                                    VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <Ellipse Width="8" Height="8" Fill="{StaticResource CwAccentBrush}" />
+                                <TextBlock Text="Words" FontSize="11"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <Ellipse Width="8" Height="8" Fill="{StaticResource CwSecondaryBrush}" />
+                                <TextBlock Text="Time Saved" FontSize="11"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Loading indicator -->
+                    <StackPanel x:Name="ChartLoading" Visibility="Collapsed"
+                                HorizontalAlignment="Center" VerticalAlignment="Center"
+                                Spacing="8" Margin="0,40">
+                        <ProgressRing IsActive="True" Width="32" Height="32" />
+                        <TextBlock Text="Loading analytics..." FontSize="13"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                    </StackPanel>
+
+                    <!-- Chart -->
+                    <lvc:CartesianChart x:Name="ActivityChart"
+                                       Height="280"
+                                       Background="Transparent"
+                                       TooltipPosition="Top"
+                                       AnimationsSpeed="00:00:00.3" />
+
+                    <!-- Empty state -->
+                    <Border x:Name="ChartEmpty" Visibility="Collapsed"
+                            CornerRadius="12" Height="280"
+                            Background="{ThemeResource ControlFillColorDefaultBrush}">
+                        <StackPanel HorizontalAlignment="Center"
+                                    VerticalAlignment="Center" Spacing="8">
+                            <FontIcon Glyph="&#xE9D9;" FontSize="28"
+                                      Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
+                            <TextBlock Text="No activity data yet" FontSize="12"
+                                       Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <!-- Typing Speed Test -->
+            <Border CornerRadius="20" Padding="24"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1">
+                <StackPanel Spacing="20">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Typing Speed Test" FontSize="18" FontWeight="SemiBold" />
+                            <TextBlock Text="Measure your words per minute to personalize time saved calculations"
+                                       FontSize="13"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        </StackPanel>
+                        <Button Grid.Column="1" x:Name="SpeedTestButton"
+                                Click="OnToggleSpeedTest"
+                                Background="{StaticResource CwAccentBrush}"
+                                Foreground="White" CornerRadius="10" Padding="16,10"
+                                VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <FontIcon x:Name="SpeedTestIcon" Glyph="&#xE768;"
+                                          FontSize="14" Foreground="White" />
+                                <TextBlock x:Name="SpeedTestButtonText"
+                                           Text="Test Your Speed" FontSize="14"
+                                           FontWeight="SemiBold" />
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+
+                    <!-- Speed Display -->
+                    <Grid HorizontalAlignment="Center" Margin="0,8">
+                        <StackPanel HorizontalAlignment="Center" Spacing="4">
+                            <TextBlock x:Name="SpeedValue" Text="--"
+                                       FontSize="56" FontWeight="Bold"
+                                       HorizontalAlignment="Center"
+                                       Foreground="{StaticResource CwAccentBrush}" />
+                            <TextBlock Text="WORDS PER MINUTE" FontSize="11"
+                                       FontWeight="SemiBold" CharacterSpacing="80"
+                                       HorizontalAlignment="Center"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Test Input Area -->
+                    <StackPanel x:Name="SpeedTestArea" Visibility="Collapsed" Spacing="12">
+                        <TextBlock x:Name="PromptText"
+                                   Text="The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs."
+                                   FontSize="14" TextWrapping="Wrap"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                   Padding="16" />
+                        <TextBox x:Name="SpeedTestInput"
+                                 PlaceholderText="Start typing the text above..."
+                                 TextChanged="OnSpeedTestInput"
+                                 CornerRadius="12" Padding="14,12"
+                                 FontSize="14" />
+                        <StackPanel Orientation="Horizontal" Spacing="16"
+                                    HorizontalAlignment="Center">
+                            <TextBlock x:Name="TimerText" Text="Time: 0s"
+                                       FontSize="13" FontWeight="SemiBold"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                            <TextBlock x:Name="WordCountText" Text="Words: 0"
+                                       FontSize="13" FontWeight="SemiBold"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Footnote -->
+            <Border x:Name="FootnoteCard" CornerRadius="14" Padding="16,14"
+                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1">
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                    <FontIcon Glyph="&#xE946;" FontSize="14"
+                              Foreground="{StaticResource CwSecondaryBrush}" />
+                    <TextBlock x:Name="FootnoteText"
+                               Text="Time saved is estimated using a typing speed of 40 words per minute."
+                               FontSize="12"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                               TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

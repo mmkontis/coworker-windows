@@ -1,0 +1,128 @@
+<UserControl
+    x:Class="Coworker.Controls.ActionPicker"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:models="using:Coworker.Models">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ms-appx:///Controls/VoiceCommandResources.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <!-- Mac SearchableActionPicker: a field-like button that opens a 320 wide searchable list. -->
+    <Button x:Name="TriggerButton" Style="{StaticResource CommandPlainButtonStyle}"
+            HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+            Background="{ThemeResource ControlSolidFillColorDefaultBrush}"
+            BorderBrush="{StaticResource CommandAccentStroke}" BorderThickness="1"
+            CornerRadius="8" Padding="10,8" AutomationProperties.Name="Action">
+        <Grid ColumnSpacing="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="18" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid VerticalAlignment="Center">
+                <FontIcon x:Name="EntryIcon" FontSize="13" FontWeight="Medium" HorizontalAlignment="Center" />
+                <FontIcon x:Name="PlaceholderIcon" Glyph="&#xE80A;" FontSize="12" HorizontalAlignment="Center"
+                          Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+            </Grid>
+            <Grid Grid.Column="1" VerticalAlignment="Center">
+                <TextBlock x:Name="EntryText" FontSize="13" FontWeight="Medium" TextTrimming="CharacterEllipsis" />
+                <TextBlock x:Name="PlaceholderText" Text="Choose an action…" FontSize="13"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+            </Grid>
+            <StackPanel Grid.Column="2" VerticalAlignment="Center" Spacing="-3">
+                <FontIcon Glyph="&#xE70E;" FontSize="8" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                <FontIcon Glyph="&#xE70D;" FontSize="8" FontWeight="SemiBold" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+            </StackPanel>
+        </Grid>
+
+        <Button.Flyout>
+            <Flyout x:Name="PickerFlyout" Placement="Bottom" Opened="OnFlyoutOpened" Closed="OnFlyoutClosed">
+                <Flyout.FlyoutPresenterStyle>
+                    <Style TargetType="FlyoutPresenter">
+                        <Setter Property="Padding" Value="0" />
+                        <Setter Property="MinWidth" Value="320" />
+                        <Setter Property="MaxWidth" Value="320" />
+                        <Setter Property="CornerRadius" Value="8" />
+                    </Style>
+                </Flyout.FlyoutPresenterStyle>
+
+                <Grid Width="320">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Grid Padding="12,10" ColumnSpacing="8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <FontIcon Glyph="&#xE721;" FontSize="12" FontWeight="Medium" VerticalAlignment="Center"
+                                  Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBox x:Name="SearchBox" Grid.Column="1" Style="{StaticResource CommandFlatTextBoxStyle}"
+                                 PlaceholderText="Search actions…" FontSize="13" VerticalAlignment="Center"
+                                 AutomationProperties.Name="Search actions" TextChanged="OnSearchChanged" />
+                        <Button x:Name="ClearButton" Grid.Column="2" Style="{StaticResource CommandPlainButtonStyle}"
+                                Visibility="Collapsed" Click="OnClearClick" AutomationProperties.Name="Clear search">
+                            <FontIcon Glyph="&#xEA39;" FontSize="12" Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
+                        </Button>
+                    </Grid>
+
+                    <Border Grid.Row="1" Height="1" Background="{ThemeResource DividerStrokeColorDefaultBrush}" />
+
+                    <StackPanel x:Name="EmptyPanel" Grid.Row="2" Visibility="Collapsed" Padding="0,28" Spacing="8">
+                        <FontIcon Glyph="&#xE721;" FontSize="20" Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
+                        <TextBlock x:Name="EmptyText" FontSize="12" TextAlignment="Center" TextWrapping="Wrap"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                    </StackPanel>
+
+                    <ScrollViewer x:Name="ListScroll" Grid.Row="2" MaxHeight="340">
+                        <ItemsRepeater x:Name="OptionsRepeater">
+                            <DataTemplate x:DataType="models:ActionOptionViewModel">
+                                <StackPanel>
+                                    <Border Height="1" Margin="44,0,0,0" Visibility="{x:Bind DividerVisibility}"
+                                            Background="{ThemeResource DividerStrokeColorDefaultBrush}" />
+                                    <Button Style="{StaticResource CommandPlainButtonStyle}" HorizontalAlignment="Stretch"
+                                            HorizontalContentAlignment="Stretch" Background="{x:Bind RowBrush}"
+                                            Tag="{x:Bind}" Click="OnOptionClick" Padding="12,8"
+                                            AutomationProperties.Name="{x:Bind Name}">
+                                        <Grid ColumnSpacing="10">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="26" />
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <Border Width="26" Height="26" CornerRadius="6" Background="{x:Bind IconTileBrush}">
+                                                <FontIcon Glyph="{x:Bind Glyph}" FontSize="12" FontWeight="SemiBold"
+                                                          Foreground="{x:Bind IconBrush}"
+                                                          HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            </Border>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="1">
+                                                <TextBlock Text="{x:Bind Name}" FontSize="13" FontWeight="Medium"
+                                                           TextTrimming="CharacterEllipsis" />
+                                                <TextBlock Text="{x:Bind Description}" FontSize="11" MaxLines="1"
+                                                           TextTrimming="CharacterEllipsis"
+                                                           Visibility="{x:Bind HasDescription}"
+                                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                                            </StackPanel>
+                                            <FontIcon Grid.Column="2" Glyph="&#xE73E;" FontSize="11" FontWeight="Bold"
+                                                      Foreground="{StaticResource CwAccentBrush}" VerticalAlignment="Center"
+                                                      Visibility="{x:Bind CheckVisibility}" />
+                                        </Grid>
+                                    </Button>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsRepeater>
+                    </ScrollViewer>
+                </Grid>
+            </Flyout>
+        </Button.Flyout>
+    </Button>
+</UserControl>

@@ -1,0 +1,27 @@
+<UserControl
+    x:Class="Coworker.Controls.QuickAddForm"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Width="280">
+
+    <!-- Mac QuickAddForm: a title, one or two fields, an error line, Cancel / Add. -->
+    <StackPanel Padding="16" Spacing="12">
+        <TextBlock x:Name="TitleText" FontSize="13" FontWeight="SemiBold" />
+        <TextBox x:Name="PhraseBox" TextChanged="OnTextChanged" KeyDown="OnPhraseKeyDown" />
+        <TextBox x:Name="ExpansionBox" PlaceholderText="Expanded text" AcceptsReturn="True" TextWrapping="Wrap"
+                 MinHeight="60" MaxHeight="110" Visibility="Collapsed" TextChanged="OnTextChanged" />
+        <TextBlock x:Name="ErrorText" FontSize="11" Foreground="#FFFF3B30" TextWrapping="Wrap" Visibility="Collapsed" />
+        <Grid ColumnSpacing="8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Button Content="Cancel" Click="OnCancel" AutomationProperties.AutomationId="quick-add-cancel" />
+            <ProgressRing x:Name="Spinner" Grid.Column="2" Width="16" Height="16" IsActive="False" Visibility="Collapsed" />
+            <Button x:Name="AddButton" Grid.Column="3" Content="Add" Style="{StaticResource AccentButtonStyle}" IsEnabled="False"
+                    Click="OnAdd" AutomationProperties.AutomationId="quick-add-submit" />
+        </Grid>
+    </StackPanel>
+</UserControl>

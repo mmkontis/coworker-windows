@@ -1,0 +1,168 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Neutral fills of the profile popover and the pop-up menus, which follow the OS light/dark mode
+         in both themes (Mac: Color.primary.opacity(...)). -->
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Light">
+            <SolidColorBrush x:Key="PopoverHoverFill" Color="#0D000000" />
+            <SolidColorBrush x:Key="PopoverSelectedFill" Color="#14000000" />
+            <SolidColorBrush x:Key="CardFill" Color="#09000000" />
+            <SolidColorBrush x:Key="PopoverStroke" Color="#14000000" />
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Dark">
+            <SolidColorBrush x:Key="PopoverHoverFill" Color="#0DFFFFFF" />
+            <SolidColorBrush x:Key="PopoverSelectedFill" Color="#14FFFFFF" />
+            <SolidColorBrush x:Key="CardFill" Color="#09FFFFFF" />
+            <SolidColorBrush x:Key="PopoverStroke" Color="#1AFFFFFF" />
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
+
+    <!-- "MORE" / "ACCOUNT" headings of the profile popover: 11 bold, tracking 0.5. -->
+    <Style x:Key="MenuSectionTitle" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="CharacterSpacing" Value="45" />
+        <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}" />
+    </Style>
+
+    <!-- A button with no chrome of its own: the sidebar rows draw their fills, this only adds the hover
+         tint (SidebarHoverFill, the sidebar's live brush) and the keyboard focus ring. -->
+    <Style x:Key="SidebarPlainButtonStyle" TargetType="Button">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{StaticResource SidebarPrimaryText}" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="UseSystemFocusVisuals" Value="True" />
+        <Setter Property="FocusVisualMargin" Value="-2" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid x:Name="RootGrid" Background="{TemplateBinding Background}"
+                          BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                          CornerRadius="{TemplateBinding CornerRadius}">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal" />
+                                <VisualState x:Name="PointerOver">
+                                    <VisualState.Setters>
+                                        <Setter Target="RootGrid.Background" Value="{StaticResource SidebarHoverFill}" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="Pressed">
+                                    <VisualState.Setters>
+                                        <Setter Target="RootGrid.Background" Value="{StaticResource SidebarSelectedFill}" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="Disabled">
+                                    <VisualState.Setters>
+                                        <Setter Target="RootGrid.Opacity" Value="0.4" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <ContentPresenter x:Name="ContentPresenter"
+                                          Foreground="{TemplateBinding Foreground}"
+                                          Padding="{TemplateBinding Padding}"
+                                          Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- The profile popover: window-coloured, no inner padding (rows carry their own). -->
+    <Style x:Key="PopoverFlyoutPresenterStyle" TargetType="FlyoutPresenter">
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="Background" Value="{ThemeResource SolidBackgroundFillColorBaseBrush}" />
+        <Setter Property="BorderBrush" Value="{ThemeResource PopoverStroke}" />
+        <Setter Property="IsDefaultShadowEnabled" Value="True" />
+    </Style>
+
+    <!-- The workspace menu (Mac: offset 46, padding 6, radius 6, hairline stroke). -->
+    <Style x:Key="WorkspaceFlyoutPresenterStyle" TargetType="FlyoutPresenter" BasedOn="{StaticResource PopoverFlyoutPresenterStyle}">
+        <Setter Property="Padding" Value="6" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="MaxWidth" Value="400" />
+    </Style>
+    <!-- The workspace picker: like the plain style, but its resting fill is the neutral chip, so hovering
+         changes nothing (the Mac button has no hover state either). -->
+    <Style x:Key="SidebarPickerButtonStyle" TargetType="Button">
+        <Setter Property="Background" Value="{StaticResource SidebarNeutralFill}" />
+        <Setter Property="BorderBrush" Value="{StaticResource SidebarDivider}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Foreground" Value="{StaticResource SidebarPrimaryText}" />
+        <Setter Property="Padding" Value="12,0" />
+        <Setter Property="MinHeight" Value="40" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="UseSystemFocusVisuals" Value="True" />
+        <Setter Property="FocusVisualMargin" Value="-2" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                          BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{TemplateBinding CornerRadius}">
+                        <ContentPresenter Foreground="{TemplateBinding Foreground}" Padding="{TemplateBinding Padding}"
+                                          Content="{TemplateBinding Content}"
+                                          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- A row of the profile popover and the workspace menu (Mac UserProfileMenuRow): radius 10, hover
+         fill primary at 5%. Selected rows get their own fill from the row control. -->
+    <Style x:Key="PopoverRowButtonStyle" TargetType="Button">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{ThemeResource TextFillColorPrimaryBrush}" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="UseSystemFocusVisuals" Value="True" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid x:Name="RootGrid" Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding CornerRadius}">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal" />
+                                <VisualState x:Name="PointerOver">
+                                    <VisualState.Setters>
+                                        <Setter Target="RootGrid.Background" Value="{ThemeResource PopoverHoverFill}" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="Pressed">
+                                    <VisualState.Setters>
+                                        <Setter Target="RootGrid.Background" Value="{ThemeResource PopoverSelectedFill}" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <ContentPresenter Foreground="{TemplateBinding Foreground}" Padding="{TemplateBinding Padding}"
+                                          Content="{TemplateBinding Content}"
+                                          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

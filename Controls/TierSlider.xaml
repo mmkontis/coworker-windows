@@ -1,0 +1,56 @@
+<UserControl
+    x:Class="Coworker.Controls.TierSlider"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    IsTabStop="True" UseSystemFocusVisuals="False">
+
+    <UserControl.Resources>
+        <!-- Mac: separatorColor at 65%. -->
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="SliderTrackFill" Color="#10000000" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="SliderTrackFill" Color="#14FFFFFF" />
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <!-- Mac ModelTierPicker: a capsule track (27 high) with a 34 knob, three stops, and the two named
+         ends underneath. -->
+    <StackPanel Spacing="9">
+        <Grid x:Name="TrackArea" Height="34" Background="Transparent"
+              PointerPressed="OnPointerPressed" PointerMoved="OnPointerMoved"
+              PointerReleased="OnPointerReleased" PointerCanceled="OnPointerCanceled" SizeChanged="OnSizeChanged">
+            <Border Height="27" CornerRadius="13.5" Background="{ThemeResource SliderTrackFill}" VerticalAlignment="Center" />
+            <Border x:Name="Fill" Height="27" CornerRadius="13.5" Background="{StaticResource CwAccentBrush}"
+                    HorizontalAlignment="Left" VerticalAlignment="Center" />
+            <Canvas x:Name="Dots" IsHitTestVisible="False" />
+            <Grid x:Name="KnobHost" Width="34" Height="34" HorizontalAlignment="Left" IsHitTestVisible="False">
+                <Border x:Name="KnobShadow" />
+                <Ellipse Fill="White" />
+            </Grid>
+            <Border x:Name="FocusRing" CornerRadius="20" BorderThickness="2" BorderBrush="{StaticResource CwAccentBrush}"
+                    Margin="-4" Visibility="Collapsed" IsHitTestVisible="False" />
+        </Grid>
+
+        <Grid Height="22">
+            <Button x:Name="FasterButton" Style="{StaticResource PopoverRowButtonStyle}" HorizontalAlignment="Left"
+                    Padding="2,0" CornerRadius="4" Click="OnFasterClick" AutomationProperties.Name="Faster">
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                    <FontIcon x:Name="FasterIcon" Glyph="&#xE945;" FontSize="11" />
+                    <TextBlock x:Name="FasterText" Text="Faster" FontSize="11" VerticalAlignment="Center" />
+                </StackPanel>
+            </Button>
+            <Button x:Name="SmarterButton" Style="{StaticResource PopoverRowButtonStyle}" HorizontalAlignment="Right"
+                    Padding="2,0" CornerRadius="4" Click="OnSmarterClick" AutomationProperties.Name="Smarter">
+                <StackPanel Orientation="Horizontal" Spacing="4">
+                    <FontIcon x:Name="SmarterIcon" Glyph="&#xF4A5;" FontSize="11" />
+                    <TextBlock x:Name="SmarterText" Text="Smarter" FontSize="11" VerticalAlignment="Center" />
+                </StackPanel>
+            </Button>
+        </Grid>
+    </StackPanel>
+</UserControl>

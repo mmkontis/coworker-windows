@@ -1,0 +1,52 @@
+<Window
+    x:Class="Coworker.Views.MicrophonePermissionWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="Microphone Permission Required">
+
+    <!-- Mac MicrophonePermissionView, 420x320: icon 44 (radius 10), title 20 semibold, the steps to
+         turn access on, a note, and OK / Open Settings. -->
+    <Grid Padding="24" RowSpacing="20" Background="{ThemeResource SolidBackgroundFillColorBaseBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid ColumnSpacing="12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Width="44" Height="44" CornerRadius="10" VerticalAlignment="Top">
+                <Image Source="ms-appx:///Assets/coworker-icon.png" Stretch="UniformToFill" />
+            </Border>
+            <StackPanel Grid.Column="1" Spacing="4">
+                <TextBlock Text="Microphone Permission Required" FontSize="20" FontWeight="SemiBold" TextWrapping="Wrap" />
+                <TextBlock Text="Coworker needs microphone access to transcribe audio." FontSize="13" TextWrapping="Wrap"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+            </StackPanel>
+        </Grid>
+
+        <StackPanel Grid.Row="1" Spacing="8">
+            <TextBlock Text="To enable microphone access:" FontSize="13" FontWeight="SemiBold" />
+            <StackPanel Spacing="4">
+                <TextBlock Text="1. Click &quot;Open Settings&quot; below." FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                <TextBlock Text="2. Navigate to Privacy &amp; security → Microphone." FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                <TextBlock Text="3. Turn on the toggle for Microphone access." FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                <TextBlock Text="4. Turn on Let desktop apps access your microphone." FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+            </StackPanel>
+        </StackPanel>
+
+        <TextBlock Grid.Row="2" Text="Note: You may need to restart Coworker after granting permission." FontSize="11" TextWrapping="Wrap"
+                   Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+
+        <StackPanel Grid.Row="4" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+            <Button Content="OK" Click="OnOk" AutomationProperties.AutomationId="mic-permission-ok" />
+            <Button Content="Open Settings" Style="{StaticResource AccentButtonStyle}" Click="OnOpenSettings"
+                    AutomationProperties.AutomationId="mic-permission-open-settings" />
+        </StackPanel>
+    </Grid>
+</Window>

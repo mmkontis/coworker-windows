@@ -1,0 +1,47 @@
+<UserControl
+    x:Class="Coworker.Controls.CommandInputCard"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    RequestedTheme="Dark">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ms-appx:///Controls/VoiceCommandResources.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <!-- Mac CommandWebInputView: 372 x 36, radius 15, padding 14 x 8. -->
+    <Grid x:Name="Pill" Width="372" Height="36" CornerRadius="15" Padding="14,0" ColumnSpacing="8"
+          BorderThickness="1" Background="#E80C142B">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <FontIcon x:Name="CommandIcon" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center" />
+
+        <TextBox x:Name="InputBox" Grid.Column="1" Style="{StaticResource CommandFlatTextBoxStyle}"
+                 PlaceholderText="Type context…" FontSize="13" Foreground="White" VerticalAlignment="Center"
+                 AutomationProperties.Name="Context"
+                 TextChanged="OnTextChanged" PreviewKeyDown="OnKeyDown" />
+
+        <Button x:Name="SubmitButton" Grid.Column="2" Style="{StaticResource CommandPlainButtonStyle}"
+                Width="22" Height="22" IsEnabled="False" Click="OnSubmitClick"
+                AutomationProperties.Name="Run command">
+            <Grid Width="22" Height="22">
+                <Ellipse x:Name="SubmitDisc" Width="20" Height="20" />
+                <FontIcon Glyph="&#xE72A;" FontSize="10" Foreground="#FF0C142B" FontWeight="Bold" />
+            </Grid>
+        </Button>
+
+        <Button Grid.Column="3" Style="{StaticResource CommandPlainButtonStyle}" Width="20" Height="20"
+                CornerRadius="10" Background="#26FFFFFF" Click="OnCancelClick"
+                AutomationProperties.Name="Cancel">
+            <FontIcon Glyph="&#xE711;" FontSize="10" FontWeight="Bold" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+        </Button>
+    </Grid>
+</UserControl>

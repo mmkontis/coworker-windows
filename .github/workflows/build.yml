@@ -1,0 +1,124 @@
+# Builds Coworker for Windows on GitHub's free Windows runners.
+#
+# This file does nothing inside the HumanlikeAI monorepo (GitHub only reads the .github folder at a repository's
+# root). installer/public_build.sh copies this folder to the public repository mmkontis/coworker-windows, where it
+# is the root, and there this workflow runs on every push:
+#
+#   - restores, builds Release x64, runs the updater tests and the text rules tests;
+#   - publishes the self-contained x64 app and compiles the Inno Setup installer;
+#   - keeps the installer under the run's Artifacts for 14 days.
+#
+# No secret is used or needed. The installer comes out without an Authenticode signature; its update signature
+# (Ed25519, Sparkle's edSignature) is made afterwards on the release Mac, where the private key lives
+# (installer/README.md, "Building from a Mac").
+name: Coworker Windows build
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 40
+    env:
+      DOTNET_NOLOGO: 'true'
+      DOTNET_CLI_TELEMETRY_OPTOUT: 'true'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Version
+        id: version
+        run: |
+          $v = dotnet msbuild Coworker.csproj -getProperty:AppVersion
+          $b = dotnet msbuild Coworker.csproj -getProperty:AppBuild
+          $k = dotnet msbuild Coworker.csproj -getProperty:UpdatePublicKey
+          "version=$v" >> $env:GITHUB_OUTPUT
+          "build=$b" >> $env:GITHUB_OUTPUT
+          "### Coworker for Windows $v (build $b)" >> $env:GITHUB_STEP_SUMMARY
+          if (-not $k) { "Updating is switched off in this build: UpdatePublicKey is empty." >> $env:GITHUB_STEP_SUMMARY }
+
+      - name: Restore
+        run: dotnet restore Coworker.csproj -p:Platform=x64
+
+      - name: Build (Release x64)
+        run: dotnet build Coworker.csproj -c Release -p:Platform=x64 --no-restore -v minimal
+
+      - name: Updater tests
+        run: dotnet test installer/tests/UpdateTests -v minimal
+
+      - name: Text rules tests
+        run: dotnet test tests/TextRulesTests -v minimal
+
+      - name: Publish (self-contained x64)
+        run: dotnet publish Coworker.csproj -c Release -p:Platform=x64 "-p:PublishDir=$env:RUNNER_TEMP\coworker-x64\" -v minimal
+
+      - name: Check the published app
+        run: |
+          $exe = Join-Path $env:RUNNER_TEMP 'coworker-x64\Coworker.exe'
+          if (-not (Test-Path $exe)) { throw "Coworker.exe was not published." }
+          if (-not (Test-Path (Join-Path $env:RUNNER_TEMP 'coworker-x64\Assets\coworker.ico'))) { throw "Assets were not published." }
+          $fileVersion = (Get-Item $exe).VersionInfo.FileVersion
+          $expected = "${{ steps.version.outputs.version }}.${{ steps.version.outputs.build }}"
+          if ($fileVersion -ne $expected) { throw "Coworker.exe reports $fileVersion, expected $expected." }
+          "Coworker.exe $fileVersion" >> $env:GITHUB_STEP_SUMMARY
+
+      - name: Installer (Inno Setup)
+        run: |
+          $iscc = @(
+            (Get-Command iscc.exe -ErrorAction SilentlyContinue | ForEach-Object { $_.Source }),
+            (Join-Path ${env:ProgramFiles(x86)} 'Inno Setup 6\ISCC.exe'),
+            (Join-Path $env:ProgramFiles 'Inno Setup 6\ISCC.exe')
+          ) | Where-Object { $_ -and (Test-Path $_) } | Select-Object -First 1
+          if (-not $iscc) {
+            choco install innosetup --no-progress -y
+            $iscc = Join-Path ${env:ProgramFiles(x86)} 'Inno Setup 6\ISCC.exe'
+          }
+          $out = Join-Path $env:RUNNER_TEMP 'installer'
+          & $iscc /Q "/DAppVersion=${{ steps.version.outputs.version }}" "/DAppBuild=${{ steps.version.outputs.build }}" /DArch=x64 "/DSourceDir=$env:RUNNER_TEMP\coworker-x64" "/DOutputDir=$out" installer\Coworker.iss
+          if ($LASTEXITCODE -ne 0) { throw "ISCC failed with exit code $LASTEXITCODE." }
+          $installer = Get-ChildItem $out -Filter 'Coworker-*-win-x64.exe' | Select-Object -First 1
+          if (-not $installer) { throw "ISCC finished but no installer was created." }
+          $hash = (Get-FileHash $installer.FullName -Algorithm SHA256).Hash.ToLower()
+          "$hash  $($installer.Name)" | Set-Content -Encoding ascii "$($installer.FullName).sha256"
+          "Installer: $($installer.Name), $([math]::Round($installer.Length / 1MB, 1)) MB, sha256 $hash" >> $env:GITHUB_STEP_SUMMARY
+
+      - name: Try the installer (silent install, start, uninstall)
+        run: |
+          $installer = Get-ChildItem (Join-Path $env:RUNNER_TEMP 'installer') -Filter 'Coworker-*-win-x64.exe' | Select-Object -First 1
+          $log = Join-Path $env:RUNNER_TEMP 'install.log'
+          $p = Start-Process $installer.FullName -ArgumentList '/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART',"/LOG=$log" -Wait -PassThru
+          if ($p.ExitCode -ne 0) { Get-Content $log -Tail 40; throw "The installer exited with $($p.ExitCode)." }
+          $app = Join-Path $env:LOCALAPPDATA 'Programs\Coworker\Coworker.exe'
+          if (-not (Test-Path $app)) { Get-Content $log -Tail 40; throw "Coworker.exe was not installed to $app." }
+          # A silent install starts the app in the background (the update path). It has to stay up.
+          Start-Sleep -Seconds 12
+          $running = Get-Process Coworker -ErrorAction SilentlyContinue
+          if (-not $running) { throw "Coworker did not stay running after the silent install." }
+          "Installed and running: $((Get-Item $app).VersionInfo.FileVersion)" >> $env:GITHUB_STEP_SUMMARY
+          $running | Stop-Process -Force
+          $uninstaller = Join-Path $env:LOCALAPPDATA 'Programs\Coworker\unins000.exe'
+          $u = Start-Process $uninstaller -ArgumentList '/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART' -Wait -PassThru
+          if ($u.ExitCode -ne 0) { throw "The uninstaller exited with $($u.ExitCode)." }
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coworker-windows-installer
+          path: ${{ runner.temp }}/installer
+          retention-days: 14
+          if-no-files-found: error

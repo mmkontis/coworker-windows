@@ -1,0 +1,55 @@
+<UserControl
+    x:Class="Coworker.Controls.CompactToastCard"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- 340x52, radius 14, padding 12: the Mac CompactNotificationCard. Grid, not Border, so the
+         drag surface can sit under the buttons. -->
+    <Grid Width="340" Height="52" CornerRadius="14" Padding="12,0" ColumnSpacing="9"
+          BorderThickness="1" BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <Grid x:Name="DragSurface" Background="Transparent" ColumnSpacing="9"
+              PointerPressed="OnPointerPressed" PointerMoved="OnPointerMoved"
+              PointerReleased="OnPointerReleased" PointerCanceled="OnPointerCanceled">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Image Width="23" Height="23" Source="ms-appx:///Assets/coworker-icon.png" VerticalAlignment="Center" />
+
+            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                <TextBlock x:Name="TitleText" FontSize="12" FontWeight="SemiBold" MaxLines="1"
+                           TextTrimming="CharacterEllipsis" Visibility="Collapsed" />
+                <TextBlock x:Name="MessageText" FontSize="12" MaxLines="1" TextTrimming="CharacterEllipsis" />
+            </StackPanel>
+        </Grid>
+
+        <Button x:Name="ActionButton" Grid.Column="1" Visibility="Collapsed" Height="27" Padding="10,0"
+                CornerRadius="7" VerticalAlignment="Center" Foreground="White" Click="OnActionClick">
+            <Button.Resources>
+                <SolidColorBrush x:Key="ButtonBackground" Color="{StaticResource CwAccentColor}" />
+                <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="{StaticResource CwAccentColor}" Opacity="0.85" />
+                <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="{StaticResource CwAccentColor}" Opacity="0.7" />
+                <SolidColorBrush x:Key="ButtonForeground" Color="White" />
+                <SolidColorBrush x:Key="ButtonForegroundPointerOver" Color="White" />
+                <SolidColorBrush x:Key="ButtonForegroundPressed" Color="White" />
+                <SolidColorBrush x:Key="ButtonBorderBrush" Color="Transparent" />
+                <SolidColorBrush x:Key="ButtonBorderBrushPointerOver" Color="Transparent" />
+                <SolidColorBrush x:Key="ButtonBorderBrushPressed" Color="Transparent" />
+            </Button.Resources>
+            <TextBlock x:Name="ActionText" FontSize="11" FontWeight="Medium" />
+        </Button>
+
+        <Button x:Name="CloseButton" Grid.Column="2" Width="18" Height="27" Padding="0" VerticalAlignment="Center"
+                Background="Transparent" BorderThickness="0" Click="OnCloseClick"
+                AutomationProperties.Name="Dismiss notification">
+            <FontIcon Glyph="&#xE711;" FontSize="11" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+        </Button>
+    </Grid>
+</UserControl>

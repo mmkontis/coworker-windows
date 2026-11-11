@@ -1,0 +1,145 @@
+<UserControl
+    x:Class="Coworker.Controls.TrayPanel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:Coworker.Controls"
+    Width="340">
+
+    <!-- Mac MenuBarView: 340 wide, padding 18. Signed in: header, the model slider, language and
+         translation rows, quick-add buttons, footer. Signed out: a sign-in prompt. -->
+    <Grid Padding="18">
+        <!-- Signed in -->
+        <StackPanel x:Name="SignedInView">
+            <Grid ColumnSpacing="9" Margin="0,0,0,19">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Border Width="32" Height="32" CornerRadius="8">
+                    <Image Source="ms-appx:///Assets/coworker-icon.png" Stretch="UniformToFill" />
+                </Border>
+                <TextBlock Grid.Column="1" Text="Coworker" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center" />
+                <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                    <Ellipse x:Name="StatusDot" Width="5" Height="5" Fill="#FF34C759" VerticalAlignment="Center" />
+                    <TextBlock x:Name="StatusText" Text="Ready" FontSize="11" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                </StackPanel>
+            </Grid>
+
+            <controls:TierSlider Margin="0,0,0,17" />
+            <Border Height="1" Opacity="0.4" Background="{ThemeResource PopoverStroke}" />
+
+            <StackPanel Padding="0,8">
+                <Button x:Name="LanguageRow" Style="{StaticResource PopoverRowButtonStyle}" Height="35" CornerRadius="6"
+                        Click="OnLanguageClick" AutomationProperties.Name="Language" AutomationProperties.AutomationId="tray-language">
+                    <Grid ColumnSpacing="9">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="15" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <FontIcon Glyph="&#xE774;" FontSize="13" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock Grid.Column="1" Text="Language" FontSize="12" VerticalAlignment="Center" />
+                        <TextBlock x:Name="LanguageValue" Grid.Column="2" FontSize="12" HorizontalAlignment="Right" MaxLines="1"
+                                   TextTrimming="CharacterEllipsis" VerticalAlignment="Center"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                    </Grid>
+                </Button>
+
+                <Grid Height="35" ColumnSpacing="9">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="15" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <FontIcon Glyph="&#xE8C1;" FontSize="13" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                    <TextBlock Grid.Column="1" Text="Translation" FontSize="12" VerticalAlignment="Center" />
+                    <ToggleSwitch x:Name="TranslationToggle" Grid.Column="3" OnContent="" OffContent="" MinWidth="0"
+                                  Toggled="OnTranslationToggled" AutomationProperties.Name="Translation" />
+                </Grid>
+
+                <Button x:Name="TranslateToRow" Style="{StaticResource PopoverRowButtonStyle}" Height="35" CornerRadius="6"
+                        Visibility="Collapsed" Click="OnTranslateToClick" AutomationProperties.Name="Translate to"
+                        AutomationProperties.AutomationId="tray-translate-to">
+                    <Grid ColumnSpacing="9">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="15" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <FontIcon Glyph="&#xE72A;" FontSize="11" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                        <TextBlock Grid.Column="1" Text="Translate to" FontSize="12" VerticalAlignment="Center" />
+                        <TextBlock x:Name="TranslateToValue" Grid.Column="2" FontSize="12" HorizontalAlignment="Right" MaxLines="1"
+                                   TextTrimming="CharacterEllipsis" VerticalAlignment="Center"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                    </Grid>
+                </Button>
+            </StackPanel>
+
+            <!-- Mac QuickSettingsView: the mode buttons on the left, the quick-add buttons on the right. -->
+            <Grid Margin="0,0,0,12">
+            <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Left">
+                <Button x:Name="ChatModeButton" Style="{StaticResource PopoverRowButtonStyle}" Height="28" Padding="10,0" CornerRadius="7"
+                        Click="OnChatModeClick" AutomationProperties.Name="Chat mode" AutomationProperties.AutomationId="tray-chat-mode">
+                    <StackPanel Orientation="Horizontal" Spacing="5">
+                        <FontIcon Glyph="&#xE8BD;" FontSize="11" />
+                        <TextBlock Text="Chat" FontSize="11" FontWeight="Medium" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Right">
+                <Button x:Name="DictionaryButton" Style="{StaticResource PopoverRowButtonStyle}" Width="27" Height="28" CornerRadius="6"
+                        Click="OnQuickAddClick" ToolTipService.ToolTip="Add to dictionary"
+                        AutomationProperties.Name="Add to dictionary" AutomationProperties.AutomationId="tray-add-dictionary">
+                    <FontIcon Glyph="&#xE82D;" FontSize="13" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                </Button>
+                <Button x:Name="ShortcutButton" Style="{StaticResource PopoverRowButtonStyle}" Width="27" Height="28" CornerRadius="6"
+                        Click="OnQuickAddClick" ToolTipService.ToolTip="Add to shortcuts"
+                        AutomationProperties.Name="Add to shortcuts" AutomationProperties.AutomationId="tray-add-shortcut">
+                    <FontIcon Glyph="&#xE765;" FontSize="13" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                </Button>
+            </StackPanel>
+            </Grid>
+
+            <StackPanel Spacing="12">
+                <Border Height="1" Opacity="0.4" Background="{ThemeResource PopoverStroke}" />
+                <Grid Height="22" ColumnSpacing="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Button Style="{StaticResource PopoverRowButtonStyle}" CornerRadius="4" Padding="4,0" Click="OnOpenApp"
+                            AutomationProperties.Name="Open App" AutomationProperties.AutomationId="tray-open-app">
+                        <StackPanel Orientation="Horizontal" Spacing="5">
+                            <FontIcon Glyph="&#xE737;" FontSize="11" />
+                            <TextBlock Text="Open App" FontSize="11" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <TextBlock x:Name="VersionText" Grid.Column="2" FontSize="11" VerticalAlignment="Center"
+                               Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
+                    <Button Grid.Column="3" Style="{StaticResource PopoverRowButtonStyle}" CornerRadius="4" Padding="4,0" Click="OnQuit"
+                            ToolTipService.ToolTip="Quit Coworker" AutomationProperties.Name="Quit Coworker"
+                            AutomationProperties.AutomationId="tray-quit">
+                        <FontIcon Glyph="&#xE7E8;" FontSize="13" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                    </Button>
+                </Grid>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Signed out -->
+        <StackPanel x:Name="SignedOutView" Visibility="Collapsed" HorizontalAlignment="Center">
+            <Border Width="48" Height="48" Margin="0,0,0,12" HorizontalAlignment="Center">
+                <Image Source="ms-appx:///Assets/coworker-icon.png" Stretch="UniformToFill" />
+            </Border>
+            <TextBlock Text="Coworker" FontSize="18" FontWeight="SemiBold" HorizontalAlignment="Center" />
+            <TextBlock Text="Sign in to start dictating." FontSize="12" Margin="0,12" HorizontalAlignment="Center"
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+            <Button Content="Sign In" Style="{StaticResource AccentButtonStyle}" HorizontalAlignment="Center" Click="OnOpenApp"
+                    AutomationProperties.AutomationId="tray-sign-in" />
+        </StackPanel>
+    </Grid>
+</UserControl>

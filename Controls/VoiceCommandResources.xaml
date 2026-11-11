@@ -1,0 +1,157 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- The Mac's Color.secondary.opacity(n) fills (secondary is roughly 50% black / 55% white):
+         Faint = 4%, Soft = 8-10%, Medium = 15%, Strong = 30%. Shared by the Shortcuts page and its pickers. -->
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Light">
+            <SolidColorBrush x:Key="CommandFillFaint" Color="#05000000" />
+            <SolidColorBrush x:Key="CommandFillSoft" Color="#0D000000" />
+            <SolidColorBrush x:Key="CommandFillMedium" Color="#13000000" />
+            <SolidColorBrush x:Key="CommandFillStrong" Color="#26000000" />
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Dark">
+            <SolidColorBrush x:Key="CommandFillFaint" Color="#05FFFFFF" />
+            <SolidColorBrush x:Key="CommandFillSoft" Color="#0DFFFFFF" />
+            <SolidColorBrush x:Key="CommandFillMedium" Color="#13FFFFFF" />
+            <SolidColorBrush x:Key="CommandFillStrong" Color="#26FFFFFF" />
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
+
+    <SolidColorBrush x:Key="CommandAccentStroke" Color="#332473F2" />
+    <SolidColorBrush x:Key="CommandAccentStrokeOpen" Color="#732473F2" />
+    <SolidColorBrush x:Key="CommandAccentFill" Color="#1F2473F2" />
+    <SolidColorBrush x:Key="CommandAccentSelected" Color="#142473F2" />
+    <SolidColorBrush x:Key="CommandDangerText" Color="#B3FF3B30" />
+    <SolidColorBrush x:Key="CommandDangerFill" Color="#14FF3B30" />
+
+    <!-- The Mac's PlainButtonStyle: no chrome of its own, the caller sets the fill and radius. -->
+    <Style x:Key="CommandPlainButtonStyle" TargetType="Button">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{ThemeResource TextFillColorPrimaryBrush}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="UseSystemFocusVisuals" Value="True" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <ContentPresenter x:Name="ContentPresenter"
+                                      Background="{TemplateBinding Background}"
+                                      Foreground="{TemplateBinding Foreground}"
+                                      BorderBrush="{TemplateBinding BorderBrush}"
+                                      BorderThickness="{TemplateBinding BorderThickness}"
+                                      CornerRadius="{TemplateBinding CornerRadius}"
+                                      Padding="{TemplateBinding Padding}"
+                                      HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                      VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                      AutomationProperties.AccessibilityView="Raw">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal" />
+                                <VisualState x:Name="PointerOver">
+                                    <VisualState.Setters>
+                                        <Setter Target="ContentPresenter.Opacity" Value="0.8" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="Pressed">
+                                    <VisualState.Setters>
+                                        <Setter Target="ContentPresenter.Opacity" Value="0.6" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="Disabled" />
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                    </ContentPresenter>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- The Mac's rounded text field: controlBackground fill, accent-tinted stroke. Hover and focus
+         use the standard Windows text box states. -->
+    <Style x:Key="CommandTextBoxStyle" TargetType="TextBox" BasedOn="{StaticResource DefaultTextBoxStyle}">
+        <Setter Property="Background" Value="{ThemeResource ControlSolidFillColorDefaultBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource CommandAccentStroke}" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="IsSpellCheckEnabled" Value="False" />
+    </Style>
+
+    <!-- One segment of the Mac's segmented picker: the chosen segment is a raised, lighter tile. -->
+    <Style x:Key="CommandSegmentStyle" TargetType="ToggleButton">
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="Foreground" Value="{ThemeResource TextFillColorPrimaryBrush}" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Padding" Value="8,5" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="UseSystemFocusVisuals" Value="True" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <ContentPresenter x:Name="ContentPresenter"
+                                      Background="Transparent" BorderBrush="Transparent" BorderThickness="1"
+                                      Foreground="{TemplateBinding Foreground}"
+                                      CornerRadius="{TemplateBinding CornerRadius}"
+                                      Padding="{TemplateBinding Padding}"
+                                      HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                                      AutomationProperties.AccessibilityView="Raw">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal" />
+                                <VisualState x:Name="PointerOver">
+                                    <VisualState.Setters>
+                                        <Setter Target="ContentPresenter.Background" Value="{ThemeResource SubtleFillColorSecondaryBrush}" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="Pressed">
+                                    <VisualState.Setters>
+                                        <Setter Target="ContentPresenter.Background" Value="{ThemeResource SubtleFillColorTertiaryBrush}" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="Disabled" />
+                                <VisualState x:Name="Checked">
+                                    <VisualState.Setters>
+                                        <Setter Target="ContentPresenter.Background" Value="{ThemeResource ControlSolidFillColorDefaultBrush}" />
+                                        <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ControlStrokeColorDefaultBrush}" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="CheckedPointerOver">
+                                    <VisualState.Setters>
+                                        <Setter Target="ContentPresenter.Background" Value="{ThemeResource ControlSolidFillColorDefaultBrush}" />
+                                        <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ControlStrokeColorDefaultBrush}" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="CheckedPressed">
+                                    <VisualState.Setters>
+                                        <Setter Target="ContentPresenter.Background" Value="{ThemeResource ControlSolidFillColorDefaultBrush}" />
+                                        <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource ControlStrokeColorDefaultBrush}" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="CheckedDisabled" />
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                    </ContentPresenter>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- The Mac's PlainTextFieldStyle: no border, no fill, no focus underline, no clear button. -->
+    <Style x:Key="CommandFlatTextBoxStyle" TargetType="TextBox">
+        <Setter Property="IsSpellCheckEnabled" Value="False" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Grid Background="Transparent">
+                        <ScrollViewer x:Name="ContentElement" IsTabStop="False" ZoomMode="Disabled"
+                                      HorizontalScrollMode="Disabled" HorizontalScrollBarVisibility="Hidden"
+                                      VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Hidden" />
+                        <TextBlock x:Name="PlaceholderTextContentPresenter" Text="{TemplateBinding PlaceholderText}"
+                                   Foreground="{ThemeResource TextFillColorTertiaryBrush}" IsHitTestVisible="False"
+                                   VerticalAlignment="Center" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

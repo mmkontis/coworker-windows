@@ -1,0 +1,107 @@
+<UserControl
+    x:Class="Coworker.Controls.Sidebar"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Width="260">
+
+    <!-- Mac SidebarView: 260 wide; a theme surface (Clean: neutral with a hairline; Aurora: the deep-blue
+         gradient with the artwork and a fade towards the content), header, workspace picker, navigation,
+         and the account footer. -->
+    <Grid x:Name="Root">
+        <Rectangle Fill="{StaticResource SidebarSurfaceBrush}" IsHitTestVisible="False" />
+        <Image x:Name="AuroraArtwork" Source="ms-appx:///Assets/sidebar-background.png" Stretch="UniformToFill"
+               Visibility="Collapsed" IsHitTestVisible="False" />
+        <Rectangle x:Name="AuroraFade" Width="60" HorizontalAlignment="Right" Visibility="Collapsed" IsHitTestVisible="False">
+            <Rectangle.Fill>
+                <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                    <GradientStop x:Name="FadeMid" Offset="0.5" />
+                    <GradientStop x:Name="FadeEnd" Offset="1" />
+                    <GradientStop Color="#00000000" Offset="0" />
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+        <Rectangle x:Name="CleanBorder" Width="1" HorizontalAlignment="Right"
+                   Fill="{StaticResource SidebarBorderBrush}" IsHitTestVisible="False" />
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- Header: 36 icon (radius 9) + "Coworker" 17 bold, tracking -0.2. -->
+            <StackPanel Orientation="Horizontal" Spacing="10" Margin="16,44,16,18">
+                <Grid Width="36" Height="36">
+                    <Border x:Name="LogoShadow" />
+                    <Border CornerRadius="9">
+                        <Image Source="ms-appx:///Assets/coworker-icon.png" Stretch="UniformToFill" />
+                    </Border>
+                </Grid>
+                <TextBlock Text="Coworker" FontSize="17" FontWeight="Bold" CharacterSpacing="-12" VerticalAlignment="Center"
+                           Foreground="{StaticResource SidebarPrimaryText}" />
+            </StackPanel>
+
+            <!-- Workspace picker (dropdown design only). -->
+            <Button x:Name="WorkspaceButton" Grid.Row="1" Margin="12,0,12,10" Style="{StaticResource SidebarPickerButtonStyle}"
+                    Click="OnWorkspaceClick" AutomationProperties.Name="Workspace" AutomationProperties.AutomationId="workspace-picker">
+                <Grid ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="20" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Border x:Name="WorkspaceIcon" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <TextBlock x:Name="WorkspaceName" Grid.Column="1" FontSize="14" FontWeight="Medium" VerticalAlignment="Center" />
+                    <FontIcon Grid.Column="2" Glyph="&#xE70D;" FontSize="10" Foreground="{StaticResource SidebarSecondaryText}" />
+                </Grid>
+            </Button>
+
+            <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled">
+                <StackPanel x:Name="NavHost" Spacing="8" Padding="0,4" />
+            </ScrollViewer>
+
+            <!-- The shortcut card, above the account row. -->
+            <Border x:Name="HotkeyHost" Grid.Row="3" Margin="12,0,12,8" Visibility="Collapsed" />
+
+            <StackPanel Grid.Row="4">
+                <Border Height="1" Background="{StaticResource SidebarDivider}" />
+                <Button x:Name="UserButton" Style="{StaticResource SidebarPlainButtonStyle}" CornerRadius="0"
+                        Click="OnUserClick" AutomationProperties.Name="Account menu" AutomationProperties.AutomationId="account-menu">
+                    <Grid Padding="14,12" ColumnSpacing="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <Grid Width="32" Height="32">
+                            <Border x:Name="AvatarShadow" />
+                            <Ellipse Fill="{StaticResource AvatarGradientBrush}" />
+                            <TextBlock x:Name="AvatarInitial" FontSize="13" FontWeight="SemiBold" Foreground="White"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            <!-- The Google photo covers the initial once it has loaded. -->
+                            <Ellipse x:Name="AvatarPhoto" Visibility="Collapsed">
+                                <Ellipse.Fill>
+                                    <ImageBrush x:Name="AvatarPhotoBrush" Stretch="UniformToFill"
+                                                ImageOpened="OnAvatarPhotoOpened" ImageFailed="OnAvatarPhotoFailed" />
+                                </Ellipse.Fill>
+                            </Ellipse>
+                        </Grid>
+
+                        <StackPanel Grid.Column="1" Spacing="1" VerticalAlignment="Center">
+                            <TextBlock x:Name="UserName" FontSize="13" FontWeight="SemiBold" MaxLines="1"
+                                       TextTrimming="CharacterEllipsis" Foreground="{StaticResource SidebarPrimaryText}" />
+                            <TextBlock x:Name="PlanText" Text="Pro Plan" FontSize="10" FontWeight="Medium" />
+                        </StackPanel>
+
+                        <FontIcon x:Name="UserChevron" Grid.Column="2" Glyph="&#xE70E;" FontSize="9" FontWeight="Bold"
+                                  Foreground="{StaticResource SidebarSecondaryText}" VerticalAlignment="Center" />
+                    </Grid>
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

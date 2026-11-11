@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Tests for the updater core (Services\Updates), the release-notes parser and the signing tool.
+       The core has no WinUI dependency, so its sources are compiled straight into this test assembly.
+         dotnet test installer\tests\UpdateTests -->
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <RootNamespace>Coworker.UpdateTests</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5" />
+    <PackageReference Include="NetSparkleUpdater.SparkleUpdater" Version="3.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\..\Services\Updates\*.cs" Link="Core\%(Filename)%(Extension)" />
+    <Compile Include="..\..\tools\UpdateSigner\Ed25519Tool.cs" Link="Core\Ed25519Tool.cs" />
+    <ProjectReference Include="..\FakeInstaller\FakeInstaller.csproj" ReferenceOutputAssembly="false" Private="false" />
+  </ItemGroup>
+
+  <!-- Put the fake installer next to the tests so they can serve it as the "download". -->
+  <Target Name="CopyFakeInstaller" AfterTargets="Build">
+    <ItemGroup>
+      <FakeInstallerFile Include="..\FakeInstaller\bin\$(Configuration)\net9.0\FakeInstaller.exe" />
+      <FakeInstallerFile Include="..\FakeInstaller\bin\$(Configuration)\net9.0\FakeInstaller.dll" />
+      <FakeInstallerFile Include="..\FakeInstaller\bin\$(Configuration)\net9.0\FakeInstaller.runtimeconfig.json" />
+    </ItemGroup>
+    <Copy SourceFiles="@(FakeInstallerFile)" DestinationFolder="$(OutDir)fake-installer" />
+  </Target>
+
+</Project>

@@ -1,0 +1,147 @@
+<Page
+    x:Class="Coworker.Pages.ListsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid>
+        <!-- Main Content -->
+        <ScrollViewer x:Name="MainContent" VerticalScrollBarVisibility="Auto">
+            <StackPanel Spacing="24" Padding="24,8,24,32">
+                <!-- Header -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Border CornerRadius="14" Width="48" Height="48"
+                            Background="#192473F2" Margin="0,0,16,0"
+                            VerticalAlignment="Center">
+                        <FontIcon Glyph="&#xE762;" FontSize="22"
+                                  Foreground="{StaticResource CwAccentBrush}"
+                                  HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+
+                    <StackPanel Grid.Column="1" Spacing="4" VerticalAlignment="Center">
+                        <TextBlock Text="Lists" FontSize="22" FontWeight="Bold" />
+                        <TextBlock Text="Organize your tasks and items"
+                                   FontSize="14"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                    </StackPanel>
+                </Grid>
+
+                <!-- Add New Item Form -->
+                <Border CornerRadius="16" Padding="20"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1">
+                    <StackPanel Spacing="12">
+                        <TextBlock Text="Add New Item" FontSize="15" FontWeight="SemiBold" />
+                        <TextBox x:Name="NewTitleBox" PlaceholderText="Title"
+                                 CornerRadius="10" Padding="12,10" />
+                        <TextBox x:Name="NewDescriptionBox" PlaceholderText="Description (optional)"
+                                 CornerRadius="10" Padding="12,10" />
+                        <Button Click="OnAddItem"
+                                Background="{StaticResource CwAccentBrush}"
+                                Foreground="White" CornerRadius="10" Padding="16,10"
+                                HorizontalAlignment="Left">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <FontIcon Glyph="&#xE710;" FontSize="14" Foreground="White" />
+                                <TextBlock Text="Add Item" FontSize="14" FontWeight="SemiBold" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Border>
+
+                <!-- Summary -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Name="SummaryText" FontSize="13"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                               VerticalAlignment="Center" />
+                    <Button Grid.Column="1" Click="OnClearCompleted"
+                            Background="Transparent" BorderThickness="0"
+                            Padding="8,4" CornerRadius="8">
+                        <TextBlock Text="Clear Completed" FontSize="12"
+                                   Foreground="{StaticResource CwAccentBrush}" />
+                    </Button>
+                </Grid>
+
+                <!-- List Items -->
+                <ItemsRepeater x:Name="ListRepeater">
+                    <ItemsRepeater.Layout>
+                        <StackLayout Spacing="8" />
+                    </ItemsRepeater.Layout>
+                    <ItemsRepeater.ItemTemplate>
+                        <DataTemplate>
+                            <Border CornerRadius="14" Padding="16,14"
+                                    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                    BorderThickness="1">
+                                <Grid ColumnSpacing="14">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Checkbox -->
+                                    <CheckBox IsChecked="{Binding IsCompleted}"
+                                              Click="OnToggleItem" Tag="{Binding Id}"
+                                              VerticalAlignment="Center" MinWidth="0" Padding="0" />
+
+                                    <!-- Title + Description -->
+                                    <StackPanel Grid.Column="1" Spacing="2"
+                                                VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Title}" FontSize="14"
+                                                   FontWeight="SemiBold"
+                                                   TextDecorations="{Binding StrikethroughDecoration}" />
+                                        <TextBlock Text="{Binding Description}" FontSize="12"
+                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                   Visibility="{Binding DescriptionVisibility}"
+                                                   TextTrimming="CharacterEllipsis" MaxLines="1" />
+                                    </StackPanel>
+
+                                    <!-- Date -->
+                                    <TextBlock Grid.Column="2" Text="{Binding FormattedDate}"
+                                               FontSize="11" VerticalAlignment="Center"
+                                               Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
+
+                                    <!-- Delete -->
+                                    <Button Grid.Column="3" Padding="6"
+                                            Background="Transparent" BorderThickness="0"
+                                            CornerRadius="6" VerticalAlignment="Center"
+                                            Click="OnDeleteItem" Tag="{Binding Id}">
+                                        <FontIcon Glyph="&#xE74D;" FontSize="13"
+                                                  Foreground="#FFE74856" />
+                                    </Button>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsRepeater.ItemTemplate>
+                </ItemsRepeater>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Empty State -->
+        <StackPanel x:Name="EmptyState" Visibility="Collapsed"
+                    HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Spacing="16">
+            <Border CornerRadius="20" Width="72" Height="72"
+                    Background="#192473F2" HorizontalAlignment="Center">
+                <FontIcon Glyph="&#xE762;" FontSize="32"
+                          Foreground="{StaticResource CwAccentBrush}"
+                          HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <TextBlock Text="No List Items Yet" FontSize="20" FontWeight="SemiBold"
+                       HorizontalAlignment="Center" />
+            <TextBlock Text="Add items above to get started"
+                       FontSize="14" HorizontalAlignment="Center"
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+        </StackPanel>
+    </Grid>
+</Page>

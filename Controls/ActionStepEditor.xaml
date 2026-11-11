@@ -1,0 +1,66 @@
+<UserControl
+    x:Class="Coworker.Controls.ActionStepEditor"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:Coworker.Controls">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ms-appx:///Controls/VoiceCommandResources.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <!-- Mac actionStepRow: radius 8, padding 8, 4% fill. -->
+    <Border CornerRadius="8" Padding="8" Background="{ThemeResource CommandFillFaint}">
+        <StackPanel Spacing="6">
+            <Grid ColumnSpacing="8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Grid Width="22" Height="22" VerticalAlignment="Center" Visibility="{x:Bind Step.IsMulti, Mode=OneWay}">
+                    <Ellipse Fill="#262473F2" />
+                    <TextBlock Text="{x:Bind Step.Number, Mode=OneWay}" FontSize="11" FontWeight="Bold"
+                               Foreground="{StaticResource CwAccentBrush}"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                </Grid>
+
+                <controls:ActionPicker x:Name="Picker" Grid.Column="1" VerticalAlignment="Center" />
+
+                <Button Grid.Column="2" Style="{StaticResource CommandPlainButtonStyle}" Width="22" Height="22"
+                        CornerRadius="11" Background="{StaticResource CommandDangerFill}" VerticalAlignment="Center"
+                        Visibility="{x:Bind Step.IsMulti, Mode=OneWay}" Click="OnRemoveClick"
+                        AutomationProperties.Name="Remove step">
+                    <FontIcon Glyph="&#xE711;" FontSize="10" FontWeight="Bold" Foreground="{StaticResource CommandDangerText}" />
+                </Button>
+            </Grid>
+
+            <StackPanel Spacing="4" Padding="{x:Bind Step.DetailPadding, Mode=OneWay}"
+                        Visibility="{x:Bind Step.IsOpenApp, Mode=OneWay}">
+                <controls:AppPicker x:Name="AppChooser" />
+                <TextBlock Text="Search installed apps or browse to a program." FontSize="10"
+                           Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
+            </StackPanel>
+
+            <StackPanel Spacing="4" Padding="{x:Bind Step.DetailPadding, Mode=OneWay}"
+                        Visibility="{x:Bind Step.IsOpenWebPage, Mode=OneWay}">
+                <TextBox Style="{StaticResource CommandTextBoxStyle}" FontSize="13" Padding="10,8"
+                         PlaceholderText="https://example.com/?q={{context}}"
+                         Text="{x:Bind Step.Url, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         AutomationProperties.Name="Web page address" />
+                <TextBlock Text="Use {{context}} for dynamic text from speech." FontSize="10"
+                           Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Spacing="6" Visibility="{x:Bind Step.ShowConnector, Mode=OneWay}">
+                <Rectangle Width="1" Height="12" Margin="10,0,0,0" Fill="#332473F2" />
+                <TextBlock Text="then" FontSize="10" FontWeight="Medium" VerticalAlignment="Center"
+                           Foreground="#802473F2" />
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</UserControl>

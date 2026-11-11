@@ -1,0 +1,81 @@
+<Page
+    x:Class="Coworker.Pages.TranscribePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Mac TranscribeWorkspaceView: a record button with the latest result. -->
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid>
+        <StackPanel MaxWidth="720" Padding="32" Spacing="28" HorizontalAlignment="Stretch">
+            <Grid>
+                <TextBlock Text="Transcribe" FontSize="24" FontWeight="SemiBold" />
+                <Button HorizontalAlignment="Right" Style="{StaticResource PopoverRowButtonStyle}" Padding="8,4" CornerRadius="6"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}" Click="OnRecordingsClick"
+                        AutomationProperties.Name="Recordings" AutomationProperties.AutomationId="transcribe-recordings">
+                    <TextBlock Text="Recordings" FontSize="14" />
+                </Button>
+            </Grid>
+
+            <StackPanel Spacing="18" Padding="0,44" HorizontalAlignment="Center">
+                <Grid Height="48" HorizontalAlignment="Center">
+                    <FontIcon x:Name="MicIcon" Glyph="&#xE720;" FontSize="32" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                    <Border x:Name="WaveIcon" Visibility="Collapsed" VerticalAlignment="Center" />
+                </Grid>
+                <TextBlock x:Name="Headline" FontSize="26" FontWeight="Medium" HorizontalAlignment="Center" TextAlignment="Center" />
+                <TextBlock x:Name="SubText" FontSize="13" HorizontalAlignment="Center" TextAlignment="Center"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+
+                <Button x:Name="RecordButton" Style="{StaticResource AccentButtonStyle}" HorizontalAlignment="Center"
+                        Padding="24,10" CornerRadius="8" Click="OnRecordClick" AutomationProperties.AutomationId="transcribe-record">
+                    <Button.Resources>
+                        <SolidColorBrush x:Key="AccentButtonBackground" Color="{StaticResource CwAccentColor}" />
+                        <SolidColorBrush x:Key="AccentButtonBackgroundPointerOver" Color="{StaticResource CwAccentColor}" Opacity="0.9" />
+                        <SolidColorBrush x:Key="AccentButtonBackgroundPressed" Color="{StaticResource CwAccentColor}" Opacity="0.8" />
+                        <SolidColorBrush x:Key="AccentButtonForeground" Color="White" />
+                        <SolidColorBrush x:Key="AccentButtonForegroundPointerOver" Color="White" />
+                        <SolidColorBrush x:Key="AccentButtonForegroundPressed" Color="White" />
+                    </Button.Resources>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon x:Name="RecordIcon" FontSize="14" />
+                        <TextBlock x:Name="RecordLabel" FontSize="14" />
+                    </StackPanel>
+                </Button>
+
+                <StackPanel x:Name="TranscribingRow" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center" Visibility="Collapsed">
+                    <ProgressRing IsActive="True" Width="16" Height="16" />
+                    <TextBlock Text="Transcribing…" FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                </StackPanel>
+
+                <TextBlock x:Name="StatusText" FontSize="12" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap"
+                           IsTextSelectionEnabled="True" Visibility="Collapsed" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+            </StackPanel>
+
+            <Border x:Name="LatestCard" CornerRadius="16" Padding="24" Background="{ThemeResource CardFill}" Visibility="Collapsed">
+                <StackPanel Spacing="16">
+                    <Grid>
+                        <TextBlock Text="Latest transcription" FontSize="12" FontWeight="Medium"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}" VerticalAlignment="Center" />
+                        <Button HorizontalAlignment="Right" Style="{StaticResource PopoverRowButtonStyle}" Padding="6,3" CornerRadius="6"
+                                Click="OnCopyClick" AutomationProperties.Name="Copy" AutomationProperties.AutomationId="transcribe-copy">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <FontIcon Glyph="&#xE8C8;" FontSize="12" />
+                                <TextBlock Text="Copy" FontSize="12" />
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+                    <TextBlock x:Name="LatestText" FontSize="15" LineHeight="25" TextWrapping="Wrap" IsTextSelectionEnabled="True" />
+                </StackPanel>
+            </Border>
+
+            <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center">
+                <Button Content="Playbooks" FontSize="12" Style="{StaticResource PopoverRowButtonStyle}" Padding="8,4" CornerRadius="6"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}" Click="OnLinkClick" Tag="Playbooks" />
+                <Button Content="Dictionary" FontSize="12" Style="{StaticResource PopoverRowButtonStyle}" Padding="8,4" CornerRadius="6"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}" Click="OnLinkClick" Tag="Dictionary" />
+                <Button Content="Shortcuts" FontSize="12" Style="{StaticResource PopoverRowButtonStyle}" Padding="8,4" CornerRadius="6"
+                        Foreground="{ThemeResource TextFillColorSecondaryBrush}" Click="OnLinkClick" Tag="VoiceCommands" />
+            </StackPanel>
+        </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Page>
