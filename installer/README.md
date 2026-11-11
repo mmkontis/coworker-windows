@@ -29,7 +29,7 @@ Verified by restoring and building, not assumed: `NetSparkleUpdater.SparkleUpdat
 ## One-time setup
 
 1. .NET 9 SDK (already needed to build the app), Python 3 (feed tooling), and **Inno Setup 6.3+**: `winget install JRSoftware.InnoSetup` (or the installer from https://jrsoftware.org/isinfo.php). `ISCC.exe` is found on PATH, in `%LOCALAPPDATA%\Programs\Inno Setup 6`, or `ISCC_PATH`. It was not installed on the machine where this was written, so the `.iss` was never compiled; see "Not verified".
-2. **Generate your own update signing key.** The repo never contains one.
+2. **Update signing key.** Since 11 Nov 2026 the Windows app uses the Mac's Sparkle key (see "Building from a Mac"); the steps below are only for a separate key. The repo never contains one.
 
    ```powershell
    cd Humanlike-apps\coworker-windows
@@ -74,6 +74,33 @@ What it does, in order (it stops at the first failure):
 Options: `-Arch arm64`, `-Critical` (adds `<sparkle:criticalUpdate />`, running apps show "Update Required"), `-Unsigned` (local test: no Authenticode, key mismatches only warn; never publish that output), `-InstallerPath <exe>` (re-sign/publish a ready-made installer, no publish/ISCC), `-WebPublicDir` / `WEB_PUBLIC_DIR` (default `..\..\Humanlike-next\public\coworker`), `-BaseUrl` / `COWORKER_INSTALLER_BASE_URL` (default `https://humanlike.co/coworker/downloads`; point at GitHub Releases or R2 for a big installer).
 
 Then, as with the Mac: commit `appcast-windows.xml` and `latest.json` together (not the installer), make sure the installer is reachable at the enclosure URL, deploy the website, and test the upgrade from the previous build. The checklist is in `Humanlike-apps/coworker/RELEASE_CHECKLIST.md` ("Windows" section).
+
+## Building from a Mac (no Windows machine)
+
+The app only builds on Windows, and the private HumanlikeAI repository's Actions budget can be used up. Public
+repositories build for free, so the Windows app has a public build mirror: **https://github.com/mmkontis/coworker-windows**
+(this folder only, without `docs/` and without history). Its workflow is `.github/workflows/build.yml` in this
+folder; inside the monorepo that file does nothing.
+
+```bash
+cd Humanlike-apps/coworker-windows
+installer/public_build.sh            # copy this folder there, wait for the run, download the installer
+installer/sign_update_mac.py installer/release/Coworker-1.0.0-win-x64.exe --notes release-notes.html \
+    --base-url https://github.com/mmkontis/coworker-windows/releases/download/v1.0.0 --update-appcast
+gh release create v1.0.0 installer/release/Coworker-1.0.0-win-x64.exe --repo mmkontis/coworker-windows \
+    --title "Coworker for Windows 1.0.0" --notes-file release-notes.html
+```
+
+- `public_build.sh` refuses to copy anything that looks like a credential, and the workflow uses no secrets. The
+  run restores, builds, runs the updater and text rules tests, publishes, compiles `Coworker.iss`, then installs
+  the installer silently, checks the app stays running and uninstalls it.
+- The update key is **the Mac's Sparkle key** (login Keychain, account `coworker`; public half in `UpdatePublicKey`,
+  the same value as the Mac's `SUPublicEDKey`). One key signs both apps' updates, so there is one key to keep safe:
+  a copy of the seed is in `~/.config/coworker-release/` on the release Mac. `sign_update_mac.py` signs with
+  Sparkle's `sign_update`, checks the signature a second way and refuses a key that is not the one in the csproj.
+- The installer from the mirror has **no Authenticode signature** (no certificate exists yet, see below), so a
+  first download shows SmartScreen's "Windows protected your PC". Updates are not affected: the updater checks the
+  Ed25519 signature and starts the installer itself.
 
 ## Code signing
 

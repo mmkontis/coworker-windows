@@ -39,6 +39,8 @@ if [[ ! -d "$CLONE/.git" ]]; then
   git clone --quiet "https://github.com/$REPO.git" "$CLONE"
 fi
 git -C "$CLONE" fetch --quiet origin
+git -C "$CLONE" reset --quiet --hard
+git -C "$CLONE" clean -qfdx
 if git -C "$CLONE" rev-parse --verify --quiet "origin/$BRANCH" >/dev/null; then
   git -C "$CLONE" checkout --quiet -B "$BRANCH" "origin/$BRANCH"
 elif git -C "$CLONE" rev-parse --verify --quiet origin/main >/dev/null; then
